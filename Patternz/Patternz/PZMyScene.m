@@ -78,7 +78,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathAddArc(path, NULL, 0, 0, dotWidth/2, 0.0, (2 * M_PI), YES);
     dot.path = path;
     //[dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
-    dot.strokeColor = dot.fillColor = [UIColor colorWithRed:0.0/255.0
+    dot.strokeColor = [UIColor colorWithRed:0.0/255.0
                                                       green:128.0/255.0
                                                        blue:255.0/255.0
                                                       alpha:1.0];
@@ -107,7 +107,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathRelease(lineLayer.path);
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-//        [lineLayer removeFromSuperlayer];
+        [lineLayer removeFromSuperlayer];
     });
 
 }
@@ -131,7 +131,7 @@ static int gridSize = 3; //nxn , n=3
 {
     CGFloat x,y;
     x = xOffset + (boardWidth * coords.x);
-    y = yOffset + (boardWidth * coords.y);
+    y = yOffset + (boardWidth * coords.y) + dotWidth/4;
     return CGPointMake(x,y);
 }
 
@@ -187,7 +187,7 @@ static int gridSize = 3; //nxn , n=3
 - (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
     
     self.lastPatternRefreshTimeInterval += timeSinceLast;
-    if (self.lastPatternRefreshTimeInterval > 500 || self.isFirstRun) {
+    if (self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) {
         self.isFirstRun = false;
         self.lastPatternRefreshTimeInterval = 0;
         [self resetGrid];

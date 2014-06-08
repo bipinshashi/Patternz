@@ -9,9 +9,11 @@
 #import "PZMyScene.h"
 #import <QuartzCore/QuartzCore.h>
 
-@interface PZMyScene ()
-
-@property (nonatomic) SKShapeNode *line;
+@interface PZMyScene()
+@property (nonatomic,strong) NSMutableArray *grid;
+@property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
+@property (nonatomic) NSTimeInterval lastPatternRefreshTimeInterval;
+@property (nonatomic, assign) bool isFirstRun;
 
 @end
 
@@ -19,6 +21,13 @@ static float xOffset = 80.0;
 static float yOffset = 200.0;
 static float boardWidth = 70.0;
 static float dotWidth = 30;
+static int gridSize = 3; //nxn , n=3
+
+struct dotStruct{
+    int x,y;
+    bool connected;
+};
+
 @implementation PZMyScene
 
 -(id)initWithSize:(CGSize)size {    
@@ -33,18 +42,36 @@ static float dotWidth = 30;
         myLabel.text = @"Patternz!";
         myLabel.fontSize = 20;
         myLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 50);
-        
         [self addChild:myLabel];
+        [self resetGrid];
         [self createBoard];
+        self.isFirstRun = true;
     }
     return self;
 }
 
+-(void)resetGrid
+{
+    self.grid = [[NSMutableArray alloc] init];
+    for (int i =0; i<gridSize; i++) {
+        self.grid[i] = [[NSMutableArray alloc] init];
+        for (int j=0; j<gridSize ; j++) {
+            //initialize grid with struct
+            struct dotStruct dotStructObject;
+            dotStructObject.x = i;
+            dotStructObject.y = j;
+            dotStructObject.connected = false;
+            [self.grid[i] addObject:[NSValue valueWithBytes:&dotStructObject objCType:@encode(struct dotStruct)]];
+        }
+    }
+}
+
+
 -(void) createBoard
 {
-
-    for (int i =0; i<3; i++) {
-        for (int j=0; j<3 ; j++) {
+    for (int i =0; i<gridSize; i++) {
+        self.grid[i] = [[NSMutableArray alloc] init];
+        for (int j=0; j<gridSize ; j++) {
             SKShapeNode* dot = [SKShapeNode node];
             [dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
             dot.strokeColor = dot.fillColor = [UIColor colorWithRed:0.0/255.0
@@ -76,19 +103,18 @@ static float dotWidth = 30;
     [lineLayer addAnimation:pathAnimation forKey:@"strokeEndAnimation"];
     [self.view.layer addSublayer:lineLayer];
     CGPathRelease(lineLayer.path);
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [lineLayer removeFromSuperlayer];
+    });
 
 }
 
 -(CGPathRef)getPath
 {
     CGMutablePathRef pathToDraw = CGPathCreateMutable();
-    CGPoint start = [self getCenterPointOfDotWithCoords:CGPointMake(1,0)];
-    CGPoint second = [self getCenterPointOfDotWithCoords:CGPointMake(1,1)];
-    CGPoint third = [self getCenterPointOfDotWithCoords:CGPointMake(0,1)];
-    CGPoint fourth = [self getCenterPointOfDotWithCoords:CGPointMake(0,2)];
+    NSArray *pointsArray = [self createRandomPatternPointsArray];
 
-    NSArray *pointsArray = @[[NSValue valueWithCGPoint:start],
-                                    [NSValue valueWithCGPoint:second],[NSValue valueWithCGPoint:third],[NSValue valueWithCGPoint:fourth]];
     for (int i=0; i<pointsArray.count; i++) {
         if (i == 0) {
             CGPathMoveToPoint(pathToDraw, NULL,[[pointsArray objectAtIndex:i] CGPointValue].x, [[pointsArray objectAtIndex:i] CGPointValue].y );
@@ -106,6 +132,28 @@ static float dotWidth = 30;
     return CGPointMake(x,y);
 }
 
+-(NSArray*)createRandomPatternPointsArray
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    for (int i=0; i < 4; i++) {
+        while (true) {
+            int x = arc4random() % gridSize;
+            int y = arc4random() % gridSize;
+            NSValue *value = [[self.grid objectAtIndex:x] objectAtIndex:y];
+            struct dotStruct dotStructObject;
+            [value getValue:&dotStructObject];
+            if (!dotStructObject.connected) {
+                CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake(dotStructObject.x,dotStructObject.y)];
+                [array addObject:[NSValue valueWithCGPoint:point]];
+                dotStructObject.connected = true;
+                value = [NSValue valueWithBytes:&dotStructObject objCType:@encode(struct dotStruct)];
+                break;
+            }
+        }
+    }
+    
+    return  array;
+}
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /* Called when a touch begins */
@@ -116,10 +164,28 @@ static float dotWidth = 30;
     
 }
 
+- (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
+    
+    self.lastPatternRefreshTimeInterval += timeSinceLast;
+    if (self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) {
+        self.isFirstRun = false;
+        self.lastPatternRefreshTimeInterval = 0;
+        [self resetGrid];
+        [self createPattern];
+    }
+}
+
+
 -(void)update:(CFTimeInterval)currentTime {
     /* Called before each frame is rendered */
-    [self createPattern];
-
+    CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
+    self.lastUpdateTimeInterval = currentTime;
+    if (timeSinceLast > 5) { // more than a second since last update
+        timeSinceLast = 5.0 / 60.0;
+        self.lastUpdateTimeInterval = currentTime;
+    }
+    
+    [self updateWithTimeSinceLastUpdate:timeSinceLast];
 }
 
 @end

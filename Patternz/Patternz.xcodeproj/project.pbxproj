@@ -25,6 +25,7 @@
 		D4C917EC19434DA40089083F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D4C917EA19434DA40089083F /* InfoPlist.strings */; };
 		D4C917EE19434DA40089083F /* PatternzTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C917ED19434DA40089083F /* PatternzTests.m */; };
 		D4C917F819436D350089083F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917F719436D350089083F /* QuartzCore.framework */; };
+		D4C917FB1944A3DF0089083F /* PZDot.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C917FA1944A3DF0089083F /* PZDot.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,8 @@
 		D4C917EB19434DA40089083F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D4C917ED19434DA40089083F /* PatternzTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatternzTests.m; sourceTree = "<group>"; };
 		D4C917F719436D350089083F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D4C917F91944A3DF0089083F /* PZDot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PZDot.h; sourceTree = "<group>"; };
+		D4C917FA1944A3DF0089083F /* PZDot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PZDot.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +136,8 @@
 				D4C917D519434DA40089083F /* PZMyScene.h */,
 				D4C917D619434DA40089083F /* PZMyScene.m */,
 				D4C917D819434DA40089083F /* Spaceship.png */,
+				D4C917F91944A3DF0089083F /* PZDot.h */,
+				D4C917FA1944A3DF0089083F /* PZDot.m */,
 				D4C917DA19434DA40089083F /* Images.xcassets */,
 				D4C917C419434DA40089083F /* Supporting Files */,
 			);
@@ -271,6 +276,7 @@
 				D4C917D419434DA40089083F /* PZViewController.m in Sources */,
 				D4C917CE19434DA40089083F /* PZAppDelegate.m in Sources */,
 				D4C917CA19434DA40089083F /* main.m in Sources */,
+				D4C917FB1944A3DF0089083F /* PZDot.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,6 +483,7 @@
 				D4C917F319434DA40089083F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D4C917F419434DA40089083F /* Build configuration list for PBXNativeTarget "PatternzTests" */ = {
 			isa = XCConfigurationList;
@@ -485,6 +492,7 @@
 				D4C917F619434DA40089083F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

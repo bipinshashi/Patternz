@@ -18,9 +18,9 @@
 
 @end
 
-static float xOffset = 70.0;
+static float xOffset = 80.0;
 static float yOffset = 200.0;
-static float boardWidth = 80.0;
+static float rowWidth = 80.0;
 static float dotWidth = 40;
 static int gridSize = 3; //nxn , n=3
 
@@ -82,7 +82,7 @@ static int gridSize = 3; //nxn , n=3
                                                       green:128.0/255.0
                                                        blue:255.0/255.0
                                                       alpha:1.0];
-    dot.position = CGPointMake((point.x*boardWidth)+ xOffset,(point.y*boardWidth) + yOffset);
+    dot.position = CGPointMake((point.x*rowWidth)+ xOffset,(point.y*rowWidth) + yOffset);
     return dot;
 
 }
@@ -130,8 +130,8 @@ static int gridSize = 3; //nxn , n=3
 -(CGPoint)getCenterPointOfDotWithCoords:(CGPoint)coords
 {
     CGFloat x,y;
-    x = xOffset + (boardWidth * coords.x);
-    y = yOffset + (boardWidth * coords.y) + dotWidth/4;
+    x = xOffset + (rowWidth * coords.x);
+    y = yOffset + (rowWidth * coords.y) + dotWidth/4;
     return CGPointMake(x,y);
 }
 

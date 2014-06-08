@@ -18,10 +18,10 @@
 
 @end
 
-static float xOffset = 80.0;
+static float xOffset = 70.0;
 static float yOffset = 200.0;
-static float boardWidth = 70.0;
-static float dotWidth = 30;
+static float boardWidth = 80.0;
+static float dotWidth = 40;
 static int gridSize = 3; //nxn , n=3
 
 @implementation PZMyScene
@@ -64,16 +64,26 @@ static int gridSize = 3; //nxn , n=3
     for (int i =0; i<gridSize; i++) {
         self.grid[i] = [[NSMutableArray alloc] init];
         for (int j=0; j<gridSize ; j++) {
-            SKShapeNode* dot = [SKShapeNode node];
-            [dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
-            dot.strokeColor = dot.fillColor = [UIColor colorWithRed:0.0/255.0
-                                                              green:128.0/255.0
-                                                               blue:255.0/255.0
-                                                              alpha:1.0];
-            dot.position = CGPointMake((i*boardWidth)+ xOffset,(j*boardWidth) + yOffset);
-            [self addChild:dot];
+            [self addChild:[self createNodeAtPosition:CGPointMake(i, j)]];
         }
     }
+
+}
+
+-(SKShapeNode *)createNodeAtPosition:(CGPoint)point
+{
+    SKShapeNode* dot = [SKShapeNode node];
+    dot.name = [NSString stringWithFormat:@"%f,%f",point.x,point.y];
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddArc(path, NULL, 0, 0, dotWidth/2, 0.0, (2 * M_PI), YES);
+    dot.path = path;
+    //[dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
+    dot.strokeColor = dot.fillColor = [UIColor colorWithRed:0.0/255.0
+                                                      green:128.0/255.0
+                                                       blue:255.0/255.0
+                                                      alpha:1.0];
+    dot.position = CGPointMake((point.x*boardWidth)+ xOffset,(point.y*boardWidth) + yOffset);
+    return dot;
 
 }
 
@@ -83,9 +93,9 @@ static int gridSize = 3; //nxn , n=3
     lineLayer.name = @"line";
     lineLayer.strokeColor = [UIColor colorWithRed:0.0/255.0
                                             green:128.0/255.0
-                                             blue:255.0/255.0 alpha:1.0].CGColor;
+                                             blue:255.0/255.0 alpha:0.7].CGColor;
     lineLayer.fillColor = nil;
-    lineLayer.lineWidth = 8.0;
+    lineLayer.lineWidth = 4.0;
     
     lineLayer.path = [self getPath];
     CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
@@ -97,7 +107,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathRelease(lineLayer.path);
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [lineLayer removeFromSuperlayer];
+//        [lineLayer removeFromSuperlayer];
     });
 
 }
@@ -108,10 +118,11 @@ static int gridSize = 3; //nxn , n=3
     NSArray *pointsArray = [self createRandomPatternPointsArray];
 
     for (int i=0; i<pointsArray.count; i++) {
-        if (i == 0) {
+        if (i == 0)
             CGPathMoveToPoint(pathToDraw, NULL,[[pointsArray objectAtIndex:i] CGPointValue].x, [[pointsArray objectAtIndex:i] CGPointValue].y );
-        }else
+        else{
             CGPathAddLineToPoint(pathToDraw, NULL, [[pointsArray objectAtIndex:i] CGPointValue].x, [[pointsArray objectAtIndex:i] CGPointValue].y);
+        }
     }
     return pathToDraw;
 }
@@ -119,15 +130,16 @@ static int gridSize = 3; //nxn , n=3
 -(CGPoint)getCenterPointOfDotWithCoords:(CGPoint)coords
 {
     CGFloat x,y;
-    x = xOffset + (boardWidth * coords.x)+ dotWidth/2;
-    y = yOffset + (boardWidth * coords.y)+ dotWidth/2;
+    x = xOffset + (boardWidth * coords.x);
+    y = yOffset + (boardWidth * coords.y);
     return CGPointMake(x,y);
 }
 
 -(NSArray*)createRandomPatternPointsArray
 {
+    NSLog(@"----");
     NSMutableArray *array = [[NSMutableArray alloc] init];
-    for (int i=0; i < 4; i++) {
+    for (int i=0; i < 5; i++) {
         while (true) {
             int x = arc4random() % gridSize;
             int y = arc4random() % gridSize;
@@ -135,6 +147,7 @@ static int gridSize = 3; //nxn , n=3
             if (!dot.connected) {
                 CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake([dot.x integerValue],[dot.y integerValue])];
                 [array addObject:[NSValue valueWithCGPoint:point]];
+                NSLog(@"point: %@,%@",dot.x,dot.y);
                 [dot setConnected:YES];
                 break;
             }
@@ -149,14 +162,32 @@ static int gridSize = 3; //nxn , n=3
     UITouch *touch = [touches anyObject];
     CGPoint location = [touch locationInNode:self];
     SKNode *node = [self nodeAtPoint:location];
-    NSLog(@"%f",node.position.x);
-    
+    NSLog(@"%f, %f",node.position.x, node.position.y);
+    [self createRippleEffectOnNode:node];
+}
+
+-(void)createRippleEffectOnNode:(SKNode *)node
+{
+    if (node.name != nil) {
+        SKShapeNode *dot = [self createNodeAtPosition:node.position];
+        dot.position = node.position;
+        [self addChild:dot];
+        
+        SKAction* scaleUpAction = [SKAction scaleTo:2.0 duration:0.5];
+        SKAction* fadeOutAction = [SKAction fadeOutWithDuration:0.5];
+        SKAction* rippleAction = [SKAction group:@[scaleUpAction,fadeOutAction]];
+        SKAction* removeNode = [SKAction runBlock:^{
+            [dot removeFromParent];
+        }];
+        
+        [dot runAction:[SKAction sequence:@[rippleAction, removeNode]]];
+    }
 }
 
 - (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
     
     self.lastPatternRefreshTimeInterval += timeSinceLast;
-    if (self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) {
+    if (self.lastPatternRefreshTimeInterval > 500 || self.isFirstRun) {
         self.isFirstRun = false;
         self.lastPatternRefreshTimeInterval = 0;
         [self resetGrid];
@@ -169,7 +200,7 @@ static int gridSize = 3; //nxn , n=3
     /* Called before each frame is rendered */
     CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
     self.lastUpdateTimeInterval = currentTime;
-    if (timeSinceLast > 5) { // more than a second since last update
+    if (timeSinceLast > 5) {
         timeSinceLast = 5.0 / 60.0;
         self.lastUpdateTimeInterval = currentTime;
     }

@@ -78,7 +78,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathAddArc(path, NULL, 0, 0, dotWidth/2, 0.0, (2 * M_PI), YES);
     dot.path = path;
     //[dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
-    dot.strokeColor = [UIColor colorWithRed:0.0/255.0
+    dot.strokeColor = dot.fillColor = [UIColor colorWithRed:0.0/255.0
                                                       green:128.0/255.0
                                                        blue:255.0/255.0
                                                       alpha:1.0];
@@ -138,23 +138,45 @@ static int gridSize = 3; //nxn , n=3
 -(NSArray*)createRandomPatternPointsArray
 {
     NSLog(@"----");
+    PZDot *currentDot, *previousDot;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     for (int i=0; i < 5; i++) {
         while (true) {
             int x = arc4random() % gridSize;
             int y = arc4random() % gridSize;
-            PZDot *dot = [[self.grid objectAtIndex:x] objectAtIndex:y];
-            if (!dot.connected) {
-                CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake([dot.x integerValue],[dot.y integerValue])];
+            currentDot = [[self.grid objectAtIndex:x] objectAtIndex:y];
+            if (!currentDot.connected && [self isDotLogicOkWithCurrentDot:currentDot previousDot:previousDot]) {
+                CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake([currentDot.x integerValue],[currentDot.y integerValue])];
                 [array addObject:[NSValue valueWithCGPoint:point]];
-                NSLog(@"point: %@,%@",dot.x,dot.y);
-                [dot setConnected:YES];
+                NSLog(@"point: %@,%@",currentDot.x,currentDot.y);
+                [currentDot setConnected:YES];
+                previousDot = currentDot;
                 break;
             }
         }
     }
     
     return  array;
+}
+
+-(BOOL) isDotLogicOkWithCurrentDot:(PZDot *)currentDot previousDot:(PZDot *)previousDot
+{
+    //function to check if the dot is in the same line or diagonal, then it should be the adjacent dot
+    if (currentDot.x == previousDot.x) {
+        if ( abs([currentDot.y integerValue] - [previousDot.y integerValue]) > 1) {
+            return NO;
+        }
+    }else if (currentDot.y == previousDot.y) {
+        if ( abs([currentDot.x integerValue] - [previousDot.x integerValue]) > 1) {
+            return NO;
+        }
+    }else if ((currentDot.x == currentDot.y && previousDot.x == previousDot.y) ||
+              ([currentDot.x integerValue] + [currentDot.y integerValue] == (gridSize -1) && [previousDot.x integerValue] + [previousDot.y integerValue] == (gridSize -1))){
+        if ( abs([currentDot.x integerValue] - [previousDot.x integerValue]) > 1) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

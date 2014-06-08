@@ -8,6 +8,7 @@
 
 #import "PZMyScene.h"
 #import <QuartzCore/QuartzCore.h>
+#import "PZDot.h"
 
 @interface PZMyScene()
 @property (nonatomic,strong) NSMutableArray *grid;
@@ -22,11 +23,6 @@ static float yOffset = 200.0;
 static float boardWidth = 70.0;
 static float dotWidth = 30;
 static int gridSize = 3; //nxn , n=3
-
-struct dotStruct{
-    int x,y;
-    bool connected;
-};
 
 @implementation PZMyScene
 
@@ -56,12 +52,8 @@ struct dotStruct{
     for (int i =0; i<gridSize; i++) {
         self.grid[i] = [[NSMutableArray alloc] init];
         for (int j=0; j<gridSize ; j++) {
-            //initialize grid with struct
-            struct dotStruct dotStructObject;
-            dotStructObject.x = i;
-            dotStructObject.y = j;
-            dotStructObject.connected = false;
-            [self.grid[i] addObject:[NSValue valueWithBytes:&dotStructObject objCType:@encode(struct dotStruct)]];
+            PZDot *dot = [[PZDot alloc] initWithxCoord:i yCoord:j];
+            [self.grid[i] addObject:dot];
         }
     }
 }
@@ -139,14 +131,11 @@ struct dotStruct{
         while (true) {
             int x = arc4random() % gridSize;
             int y = arc4random() % gridSize;
-            NSValue *value = [[self.grid objectAtIndex:x] objectAtIndex:y];
-            struct dotStruct dotStructObject;
-            [value getValue:&dotStructObject];
-            if (!dotStructObject.connected) {
-                CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake(dotStructObject.x,dotStructObject.y)];
+            PZDot *dot = [[self.grid objectAtIndex:x] objectAtIndex:y];
+            if (!dot.connected) {
+                CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake([dot.x integerValue],[dot.y integerValue])];
                 [array addObject:[NSValue valueWithCGPoint:point]];
-                dotStructObject.connected = true;
-                value = [NSValue valueWithBytes:&dotStructObject objCType:@encode(struct dotStruct)];
+                [dot setConnected:YES];
                 break;
             }
         }

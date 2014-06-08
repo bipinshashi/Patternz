@@ -12,6 +12,6 @@
 
 @property (nonatomic,assign) NSNumber *x;
 @property (nonatomic,assign) NSNumber *y;
-@property (nonatomic,assign) BOOL *connected;
-
+@property (nonatomic,assign) BOOL connected;
+-(id)initWithxCoord:(int)x yCoord:(int)y;
 @end

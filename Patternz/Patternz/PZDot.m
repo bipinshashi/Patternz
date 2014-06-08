@@ -10,4 +10,14 @@
 
 @implementation PZDot
 
+-(id)initWithxCoord:(int)x yCoord:(int)y
+{
+    if (self = [super init]) {
+        self.x = [NSNumber numberWithInt:x];
+        self.y = [NSNumber numberWithInt:y];
+        self.connected = NO;
+    }
+    return self;
+}
+
 @end

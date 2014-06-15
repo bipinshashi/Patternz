@@ -15,16 +15,23 @@
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval lastPatternRefreshTimeInterval;
 @property (nonatomic, assign) bool isFirstRun;
+@property (nonatomic,strong) SKLabelNode *timerLabel;
+@property (nonatomic, strong) CAShapeLayer *lineLayer;
 
 @end
 
 static float xOffset = 80.0;
 static float yOffset = 200.0;
 static float rowWidth = 80.0;
-static float dotWidth = 40;
+static float dotWidth = 30;
 static int gridSize = 3; //nxn , n=3
+static int patternConnections = 6;
 
 @implementation PZMyScene
+
+{
+    int timeCount;
+}
 
 -(id)initWithSize:(CGSize)size {    
     if (self = [super initWithSize:size]) {
@@ -41,6 +48,7 @@ static int gridSize = 3; //nxn , n=3
         [self addChild:myLabel];
         [self resetGrid];
         [self createBoard];
+        [self createTimer];
         self.isFirstRun = true;
     }
     return self;
@@ -78,7 +86,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathAddArc(path, NULL, 0, 0, dotWidth/2, 0.0, (2 * M_PI), YES);
     dot.path = path;
     //[dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
-    dot.strokeColor = dot.fillColor = [UIColor colorWithRed:0.0/255.0
+    dot.strokeColor  = dot.fillColor = [UIColor colorWithRed:0.0/255.0
                                                       green:128.0/255.0
                                                        blue:255.0/255.0
                                                       alpha:1.0];
@@ -89,27 +97,42 @@ static int gridSize = 3; //nxn , n=3
 
 -(void) createPattern
 {
-    CAShapeLayer *lineLayer = [CAShapeLayer layer];
-    lineLayer.name = @"line";
-    lineLayer.strokeColor = [UIColor colorWithRed:0.0/255.0
+    self.lineLayer = [CAShapeLayer layer];
+    self.lineLayer.name = @"line";
+    self.lineLayer.strokeColor = [UIColor colorWithRed:0.0/255.0
                                             green:128.0/255.0
                                              blue:255.0/255.0 alpha:0.7].CGColor;
-    lineLayer.fillColor = nil;
-    lineLayer.lineWidth = 4.0;
+    self.lineLayer.fillColor = nil;
+    self.lineLayer.lineWidth = 4.0;
     
-    lineLayer.path = [self getPath];
+    self.lineLayer.path = [self getPath];
     CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
     pathAnimation.duration = 1.0;
     pathAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
     pathAnimation.toValue = [NSNumber numberWithFloat:1.0f];
-    [lineLayer addAnimation:pathAnimation forKey:@"strokeEndAnimation"];
-    [self.view.layer addSublayer:lineLayer];
-    CGPathRelease(lineLayer.path);
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [lineLayer removeFromSuperlayer];
-    });
+    pathAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    [self.lineLayer addAnimation:pathAnimation forKey:@"strokeEndAnimation"];
 
+    [self.view.layer addSublayer:self.lineLayer];
+    NSMutableArray* points = [NSMutableArray array];
+    CGPathApply(self.lineLayer.path, (__bridge void *)(points), extractPointsApplier);
+    NSLog(@"%@",points);
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+//        [self.lineLayer removeFromSuperlayer];
+//        CGPathRelease(self.lineLayer.path);
+//    });
+
+}
+
+
+static void extractPointsApplier(void* info, const CGPathElement* element)
+{
+    NSMutableArray* points = (__bridge NSMutableArray *)(info);
+    
+    if (element->points && element->type != kCGPathElementCloseSubpath) {
+        CGPoint p = *(element->points);
+        [points addObject:[NSValue valueWithCGPoint:p]];
+    }
 }
 
 -(CGPathRef)getPath
@@ -140,7 +163,7 @@ static int gridSize = 3; //nxn , n=3
     NSLog(@"----");
     PZDot *currentDot, *previousDot;
     NSMutableArray *array = [[NSMutableArray alloc] init];
-    for (int i=0; i < 5; i++) {
+    for (int i=0; i <= patternConnections; i++) {
         while (true) {
             int x = arc4random() % gridSize;
             int y = arc4random() % gridSize;
@@ -186,6 +209,13 @@ static int gridSize = 3; //nxn , n=3
     SKNode *node = [self nodeAtPoint:location];
     NSLog(@"%f, %f",node.position.x, node.position.y);
     [self createRippleEffectOnNode:node];
+    
+    if ([self.lineLayer.presentationLayer hitTest:CGPointMake(80, 360)]){
+        NSLog(@"HIT");
+    }
+    CALayer *layer = self.lineLayer.presentationLayer;
+    NSLog(@"presentation layer position: %f,%f",layer.position.x,layer.position.y);
+    
 }
 
 -(void)createRippleEffectOnNode:(SKNode *)node
@@ -195,8 +225,8 @@ static int gridSize = 3; //nxn , n=3
         dot.position = node.position;
         [self addChild:dot];
         
-        SKAction* scaleUpAction = [SKAction scaleTo:2.0 duration:0.5];
-        SKAction* fadeOutAction = [SKAction fadeOutWithDuration:0.5];
+        SKAction* scaleUpAction = [SKAction scaleTo:2.0 duration:0.2];
+        SKAction* fadeOutAction = [SKAction fadeOutWithDuration:0.2];
         SKAction* rippleAction = [SKAction group:@[scaleUpAction,fadeOutAction]];
         SKAction* removeNode = [SKAction runBlock:^{
             [dot removeFromParent];
@@ -209,12 +239,13 @@ static int gridSize = 3; //nxn , n=3
 - (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
     
     self.lastPatternRefreshTimeInterval += timeSinceLast;
-    if (self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) {
+    if (self.lastPatternRefreshTimeInterval > 500 || self.isFirstRun) {
         self.isFirstRun = false;
         self.lastPatternRefreshTimeInterval = 0;
         [self resetGrid];
         [self createPattern];
     }
+
 }
 
 
@@ -228,6 +259,45 @@ static int gridSize = 3; //nxn , n=3
     }
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
+}
+
+#pragma mark - Timer
+
+- (void)createTimer {
+    // start timer
+    NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
+    timeCount = 5; // instance variable
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    self.timerLabel.fontSize = 14;
+    self.timerLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 100);
+    [self addChild:self.timerLabel];
+}
+
+- (void)timerFired:(NSTimer *)timer {
+    // update label
+    if(timeCount == 0){
+        [self timerExpired];
+    } else {
+        timeCount--;
+        if(timeCount == 0) {
+            // display correct dialog with button
+//            [timer invalidate];
+//            [self timerExpired];
+            [self addToTimer:10];
+        }
+    }
+    self.timerLabel.text = [NSString stringWithFormat:@"%d:%02d",timeCount/60, timeCount % 60];
+}
+
+-(void)addToTimer:(int)value
+{
+    timeCount += value;
+}
+
+- (void) timerExpired {
+    // display an alert or something when the timer expires.
+    NSLog(@"timer expired");
 }
 
 @end

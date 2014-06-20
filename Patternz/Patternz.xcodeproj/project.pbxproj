@@ -93,6 +93,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D4699D84194DAD4300F3294B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D4C917F91944A3DF0089083F /* PZDot.h */,
+				D4C917FA1944A3DF0089083F /* PZDot.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		D4C917AF19434DA30089083F = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +137,7 @@
 		D4C917C319434DA40089083F /* Patternz */ = {
 			isa = PBXGroup;
 			children = (
+				D4699D84194DAD4300F3294B /* Models */,
 				D4C917CC19434DA40089083F /* PZAppDelegate.h */,
 				D4C917CD19434DA40089083F /* PZAppDelegate.m */,
 				D4C917CF19434DA40089083F /* Main.storyboard */,
@@ -135,8 +145,6 @@
 				D4C917D319434DA40089083F /* PZViewController.m */,
 				D4C917D519434DA40089083F /* PZMyScene.h */,
 				D4C917D619434DA40089083F /* PZMyScene.m */,
-				D4C917F91944A3DF0089083F /* PZDot.h */,
-				D4C917FA1944A3DF0089083F /* PZDot.m */,
 				D4C917D819434DA40089083F /* Spaceship.png */,
 				D4C917DA19434DA40089083F /* Images.xcassets */,
 				D4C917C419434DA40089083F /* Supporting Files */,

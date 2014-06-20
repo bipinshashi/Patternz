@@ -12,12 +12,15 @@
 
 @interface PZMyScene()
 @property (nonatomic,strong) NSMutableArray *grid;
+@property (nonatomic,strong) NSMutableArray *nodeStrokeEndTriggers;
+@property (nonatomic,strong) NSMutableArray *currentNodePoints;
+
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval lastPatternRefreshTimeInterval;
 @property (nonatomic, assign) bool isFirstRun;
 @property (nonatomic,strong) SKLabelNode *timerLabel;
 @property (nonatomic, strong) CAShapeLayer *lineLayer;
-
+@property (nonatomic, assign) int nodeStrokeEndTriggerIndex;
 @end
 
 static float xOffset = 80.0;
@@ -25,7 +28,10 @@ static float yOffset = 200.0;
 static float rowWidth = 80.0;
 static float dotWidth = 30;
 static int gridSize = 3; //nxn , n=3
-static int patternConnections = 6;
+static int patternConnections = 4;
+
+//static const uint32_t dotCategory     =  0x1 << 0;
+//static const uint32_t lineCategory    =  0x1 << 1;
 
 @implementation PZMyScene
 
@@ -38,18 +44,21 @@ static int patternConnections = 6;
         /* Setup your scene here */
         NSLog(@"Size: %@",NSStringFromCGSize(size));
 
-        self.backgroundColor = [SKColor colorWithRed:0.15 green:0.15 blue:0.3 alpha:1.0];
+        self.backgroundColor = [SKColor colorWithRed:99.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
         
-        SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+        SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Wawati"];
         
-        myLabel.text = @"Patternz!";
-        myLabel.fontSize = 20;
+        myLabel.text = @"Patternz";
+        myLabel.fontSize = 24;
+        myLabel.fontColor = [UIColor blackColor];
         myLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 50);
         [self addChild:myLabel];
         [self resetGrid];
         [self createBoard];
         [self createTimer];
         self.isFirstRun = true;
+        
+        self.physicsWorld.contactDelegate = self;
     }
     return self;
 }
@@ -86,11 +95,11 @@ static int patternConnections = 6;
     CGPathAddArc(path, NULL, 0, 0, dotWidth/2, 0.0, (2 * M_PI), YES);
     dot.path = path;
     //[dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
-    dot.strokeColor  = dot.fillColor = [UIColor colorWithRed:0.0/255.0
-                                                      green:128.0/255.0
-                                                       blue:255.0/255.0
+    dot.strokeColor  = dot.fillColor = [UIColor colorWithRed:189.0/255.0
+                                                      green:67.0/255.0
+                                                       blue:67.0/255.0
                                                       alpha:1.0];
-    dot.position = CGPointMake((point.x*rowWidth)+ xOffset,(point.y*rowWidth) + yOffset);
+    dot.position = CGPointMake((point.x*rowWidth)+ xOffset, (point.y *rowWidth) + yOffset);
     return dot;
 
 }
@@ -99,9 +108,10 @@ static int patternConnections = 6;
 {
     self.lineLayer = [CAShapeLayer layer];
     self.lineLayer.name = @"line";
-    self.lineLayer.strokeColor = [UIColor colorWithRed:0.0/255.0
-                                            green:128.0/255.0
-                                             blue:255.0/255.0 alpha:0.7].CGColor;
+    self.lineLayer.strokeColor = [UIColor colorWithRed:189.0/255.0
+                                                 green:67.0/255.0
+                                                 blue:67.0/255.0
+                                                 alpha:1.0].CGColor;
     self.lineLayer.fillColor = nil;
     self.lineLayer.lineWidth = 4.0;
     
@@ -114,37 +124,24 @@ static int patternConnections = 6;
     [self.lineLayer addAnimation:pathAnimation forKey:@"strokeEndAnimation"];
 
     [self.view.layer addSublayer:self.lineLayer];
-    NSMutableArray* points = [NSMutableArray array];
-    CGPathApply(self.lineLayer.path, (__bridge void *)(points), extractPointsApplier);
-    NSLog(@"%@",points);
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-//        [self.lineLayer removeFromSuperlayer];
-//        CGPathRelease(self.lineLayer.path);
-//    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self.lineLayer removeFromSuperlayer];
+        CGPathRelease(self.lineLayer.path);
+    });
 
 }
 
-
-static void extractPointsApplier(void* info, const CGPathElement* element)
-{
-    NSMutableArray* points = (__bridge NSMutableArray *)(info);
-    
-    if (element->points && element->type != kCGPathElementCloseSubpath) {
-        CGPoint p = *(element->points);
-        [points addObject:[NSValue valueWithCGPoint:p]];
-    }
-}
 
 -(CGPathRef)getPath
 {
     CGMutablePathRef pathToDraw = CGPathCreateMutable();
-    NSArray *pointsArray = [self createRandomPatternPointsArray];
-
-    for (int i=0; i<pointsArray.count; i++) {
+    [self createRandomPatternPointsArray];
+    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, self.view.bounds.size.height);
+    for (int i=0; i<self.currentNodePoints.count; i++) {
         if (i == 0)
-            CGPathMoveToPoint(pathToDraw, NULL,[[pointsArray objectAtIndex:i] CGPointValue].x, [[pointsArray objectAtIndex:i] CGPointValue].y );
+            CGPathMoveToPoint(pathToDraw, &flipVertical,[[self.currentNodePoints objectAtIndex:i] CGPointValue].x, [[self.currentNodePoints objectAtIndex:i] CGPointValue].y );
         else{
-            CGPathAddLineToPoint(pathToDraw, NULL, [[pointsArray objectAtIndex:i] CGPointValue].x, [[pointsArray objectAtIndex:i] CGPointValue].y);
+            CGPathAddLineToPoint(pathToDraw, &flipVertical, [[self.currentNodePoints objectAtIndex:i] CGPointValue].x, [[self.currentNodePoints objectAtIndex:i] CGPointValue].y);
         }
     }
     return pathToDraw;
@@ -158,28 +155,55 @@ static void extractPointsApplier(void* info, const CGPathElement* element)
     return CGPointMake(x,y);
 }
 
--(NSArray*)createRandomPatternPointsArray
+-(void)createRandomPatternPointsArray
 {
     NSLog(@"----");
     PZDot *currentDot, *previousDot;
-    NSMutableArray *array = [[NSMutableArray alloc] init];
+    self.currentNodePoints =[[NSMutableArray alloc] init];
+    self.nodeStrokeEndTriggers = [[NSMutableArray alloc] init];
     for (int i=0; i <= patternConnections; i++) {
         while (true) {
             int x = arc4random() % gridSize;
             int y = arc4random() % gridSize;
             currentDot = [[self.grid objectAtIndex:x] objectAtIndex:y];
             if (!currentDot.connected && [self isDotLogicOkWithCurrentDot:currentDot previousDot:previousDot]) {
-                CGPoint point = [self getCenterPointOfDotWithCoords:CGPointMake([currentDot.x integerValue],[currentDot.y integerValue])];
-                [array addObject:[NSValue valueWithCGPoint:point]];
+                CGPoint currentDotCenterPoint = [self getCenterPointOfDotWithCoords:CGPointMake([currentDot.x integerValue],[currentDot.y integerValue])];
+                [self.currentNodePoints addObject:[NSValue valueWithCGPoint:currentDotCenterPoint]];
                 NSLog(@"point: %@,%@",currentDot.x,currentDot.y);
                 [currentDot setConnected:YES];
+                if (previousDot != nil) {
+                    CGPoint previousDotCenterPoint = [self getCenterPointOfDotWithCoords:CGPointMake([previousDot.x integerValue],[previousDot.y integerValue])];
+                    [self.nodeStrokeEndTriggers addObject:[self distanceBetweenPointA:currentDotCenterPoint PointB:previousDotCenterPoint]];
+                }
                 previousDot = currentDot;
                 break;
             }
         }
     }
-    
-    return  array;
+    [self generateNodeStrokeEndTriggers];
+}
+
+-(NSNumber*)distanceBetweenPointA:(CGPoint)A PointB:(CGPoint)B
+{
+    CGFloat xDist = (B.x - A.x);
+    CGFloat yDist = (B.y - A.y);
+    CGFloat distance = sqrt((xDist * xDist) + (yDist * yDist));
+    return [NSNumber numberWithFloat:distance];
+}
+
+-(void)generateNodeStrokeEndTriggers
+{
+    float totalDistance= 0.0;
+    float sum = 0.0;
+    for (int i=0; i<self.nodeStrokeEndTriggers.count; i++) {
+        totalDistance += [self.nodeStrokeEndTriggers[i] floatValue];
+    }
+    [self.nodeStrokeEndTriggers insertObject:[NSNumber numberWithFloat:0] atIndex:0];
+    for (int i=0; i<self.nodeStrokeEndTriggers.count; i++) {
+        sum += ([self.nodeStrokeEndTriggers[i] floatValue]/totalDistance);
+        self.nodeStrokeEndTriggers[i] = [NSNumber numberWithFloat:sum];
+    }
+    NSLog(@"current nodes: %@",self.currentNodePoints);
 }
 
 -(BOOL) isDotLogicOkWithCurrentDot:(PZDot *)currentDot previousDot:(PZDot *)previousDot
@@ -209,22 +233,15 @@ static void extractPointsApplier(void* info, const CGPathElement* element)
     SKNode *node = [self nodeAtPoint:location];
     NSLog(@"%f, %f",node.position.x, node.position.y);
     [self createRippleEffectOnNode:node];
-    
-    if ([self.lineLayer.presentationLayer hitTest:CGPointMake(80, 360)]){
-        NSLog(@"HIT");
-    }
-    CALayer *layer = self.lineLayer.presentationLayer;
-    NSLog(@"presentation layer position: %f,%f",layer.position.x,layer.position.y);
-    
 }
 
 -(void)createRippleEffectOnNode:(SKNode *)node
 {
     if (node.name != nil) {
         SKShapeNode *dot = [self createNodeAtPosition:node.position];
+        NSLog(@"node name: %@",node.name);
         dot.position = node.position;
         [self addChild:dot];
-        
         SKAction* scaleUpAction = [SKAction scaleTo:2.0 duration:0.2];
         SKAction* fadeOutAction = [SKAction fadeOutWithDuration:0.2];
         SKAction* rippleAction = [SKAction group:@[scaleUpAction,fadeOutAction]];
@@ -239,8 +256,9 @@ static void extractPointsApplier(void* info, const CGPathElement* element)
 - (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
     
     self.lastPatternRefreshTimeInterval += timeSinceLast;
-    if (self.lastPatternRefreshTimeInterval > 500 || self.isFirstRun) {
+    if (self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) {
         self.isFirstRun = false;
+        self.nodeStrokeEndTriggerIndex = 0;
         self.lastPatternRefreshTimeInterval = 0;
         [self resetGrid];
         [self createPattern];
@@ -257,8 +275,21 @@ static void extractPointsApplier(void* info, const CGPathElement* element)
         timeSinceLast = 5.0 / 60.0;
         self.lastUpdateTimeInterval = currentTime;
     }
-    
+//    NSLog(@"presentation layer strokeEnd: %f", [self.lineLayer.presentationLayer strokeEnd]);
+    [self animateRipple];
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
+}
+
+-(void)animateRipple {
+    
+    if (self.nodeStrokeEndTriggerIndex < self.nodeStrokeEndTriggers.count &&
+        [self.nodeStrokeEndTriggers[self.nodeStrokeEndTriggerIndex] floatValue] <= [self.lineLayer.presentationLayer strokeEnd] ) {
+        NSValue *pointValue = [self.currentNodePoints objectAtIndex:self.nodeStrokeEndTriggerIndex];
+        SKNode *node = [self nodeAtPoint:pointValue.CGPointValue];
+        NSLog(@"node position in ripple: %f, %f",node.position.x, node.position.y);
+        self.nodeStrokeEndTriggerIndex += 1;
+        [self createRippleEffectOnNode:node];
+    }
 }
 
 #pragma mark - Timer
@@ -270,6 +301,7 @@ static void extractPointsApplier(void* info, const CGPathElement* element)
     timeCount = 5; // instance variable
     self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.timerLabel.fontSize = 14;
+    self.timerLabel.fontColor = [UIColor blackColor];
     self.timerLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 100);
     [self addChild:self.timerLabel];
 }

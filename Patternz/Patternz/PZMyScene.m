@@ -59,6 +59,8 @@ static int patternConnections = 4;
         self.isFirstRun = true;
         
         self.physicsWorld.contactDelegate = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startGame) name:@"TryAgain" object:nil];
     }
     return self;
 }
@@ -79,7 +81,6 @@ static int patternConnections = 4;
 -(void) createBoard
 {
     for (int i =0; i<gridSize; i++) {
-        self.grid[i] = [[NSMutableArray alloc] init];
         for (int j=0; j<gridSize ; j++) {
             [self addChild:[self createNodeAtPosition:CGPointMake(i, j)]];
         }
@@ -124,9 +125,9 @@ static int patternConnections = 4;
     [self.lineLayer addAnimation:pathAnimation forKey:@"strokeEndAnimation"];
 
     [self.view.layer addSublayer:self.lineLayer];
+    CGPathRelease(self.lineLayer.path);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self.lineLayer removeFromSuperlayer];
-        CGPathRelease(self.lineLayer.path);
     });
 
 }
@@ -233,6 +234,7 @@ static int patternConnections = 4;
     SKNode *node = [self nodeAtPoint:location];
     NSLog(@"%f, %f",node.position.x, node.position.y);
     [self createRippleEffectOnNode:node];
+    
 }
 
 -(void)createRippleEffectOnNode:(SKNode *)node
@@ -256,7 +258,7 @@ static int patternConnections = 4;
 - (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
     
     self.lastPatternRefreshTimeInterval += timeSinceLast;
-    if (self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) {
+    if ((self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) && timeCount != 0) {
         self.isFirstRun = false;
         self.nodeStrokeEndTriggerIndex = 0;
         self.lastPatternRefreshTimeInterval = 0;
@@ -314,9 +316,9 @@ static int patternConnections = 4;
         timeCount--;
         if(timeCount == 0) {
             // display correct dialog with button
-//            [timer invalidate];
-//            [self timerExpired];
-            [self addToTimer:10];
+            [timer invalidate];
+            [self timerExpired];
+//            [self addToTimer:10];
         }
     }
     self.timerLabel.text = [NSString stringWithFormat:@"%d:%02d",timeCount/60, timeCount % 60];
@@ -330,6 +332,19 @@ static int patternConnections = 4;
 - (void) timerExpired {
     // display an alert or something when the timer expires.
     NSLog(@"timer expired");
+    [self.lineLayer removeFromSuperlayer];
+    self.nodeStrokeEndTriggerIndex = 0;
+    self.lastPatternRefreshTimeInterval = 0;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"GameOver" object:nil];
+    
+}
+
+-(void) startGame {
+    NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
+    timeCount = 5; // instance variable
+    [self resetGrid];
+    [self createPattern];
 }
 
 @end

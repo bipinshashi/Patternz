@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4699D8B1954806300F3294B /* PZGameOverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4699D8A1954806300F3294B /* PZGameOverViewController.m */; };
+		D4699D8E1954939200F3294B /* FadeTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = D4699D8D1954939200F3294B /* FadeTransition.m */; };
 		D4C917BC19434DA40089083F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BB19434DA40089083F /* Foundation.framework */; };
 		D4C917BE19434DA40089083F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BD19434DA40089083F /* CoreGraphics.framework */; };
 		D4C917C019434DA40089083F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BF19434DA40089083F /* UIKit.framework */; };
@@ -39,6 +41,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D4699D891954806300F3294B /* PZGameOverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PZGameOverViewController.h; sourceTree = "<group>"; };
+		D4699D8A1954806300F3294B /* PZGameOverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PZGameOverViewController.m; sourceTree = "<group>"; };
+		D4699D8C1954939200F3294B /* FadeTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FadeTransition.h; sourceTree = "<group>"; };
+		D4699D8D1954939200F3294B /* FadeTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FadeTransition.m; sourceTree = "<group>"; };
 		D4C917B819434DA40089083F /* Patternz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Patternz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C917BB19434DA40089083F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D4C917BD19434DA40089083F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -98,8 +104,21 @@
 			children = (
 				D4C917F91944A3DF0089083F /* PZDot.h */,
 				D4C917FA1944A3DF0089083F /* PZDot.m */,
+				D4699D8C1954939200F3294B /* FadeTransition.h */,
+				D4699D8D1954939200F3294B /* FadeTransition.m */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		D4699D881954804200F3294B /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				D4C917D219434DA40089083F /* PZViewController.h */,
+				D4C917D319434DA40089083F /* PZViewController.m */,
+				D4699D891954806300F3294B /* PZGameOverViewController.h */,
+				D4699D8A1954806300F3294B /* PZGameOverViewController.m */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 		D4C917AF19434DA30089083F = {
@@ -138,11 +157,10 @@
 			isa = PBXGroup;
 			children = (
 				D4699D84194DAD4300F3294B /* Models */,
+				D4699D881954804200F3294B /* Controllers */,
 				D4C917CC19434DA40089083F /* PZAppDelegate.h */,
 				D4C917CD19434DA40089083F /* PZAppDelegate.m */,
 				D4C917CF19434DA40089083F /* Main.storyboard */,
-				D4C917D219434DA40089083F /* PZViewController.h */,
-				D4C917D319434DA40089083F /* PZViewController.m */,
 				D4C917D519434DA40089083F /* PZMyScene.h */,
 				D4C917D619434DA40089083F /* PZMyScene.m */,
 				D4C917D819434DA40089083F /* Spaceship.png */,
@@ -282,8 +300,10 @@
 			files = (
 				D4C917D719434DA40089083F /* PZMyScene.m in Sources */,
 				D4C917D419434DA40089083F /* PZViewController.m in Sources */,
+				D4699D8B1954806300F3294B /* PZGameOverViewController.m in Sources */,
 				D4C917CE19434DA40089083F /* PZAppDelegate.m in Sources */,
 				D4C917CA19434DA40089083F /* main.m in Sources */,
+				D4699D8E1954939200F3294B /* FadeTransition.m in Sources */,
 				D4C917FB1944A3DF0089083F /* PZDot.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

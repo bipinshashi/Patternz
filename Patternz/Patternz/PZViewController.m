@@ -8,12 +8,15 @@
 
 #import "PZViewController.h"
 #import "PZMyScene.h"
+#import "PZGameOverViewController.h"
+#import "FadeTransition.h"
 
 @implementation PZViewController
 
 
 - (void)viewWillLayoutSubviews
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pushGameOverScreen) name:@"GameOver" object:nil];
     [super viewWillLayoutSubviews];
     // Configure the view.
     SKView * skView = (SKView *)self.view;
@@ -49,6 +52,30 @@
 {
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
+}
+
+-(void)pushGameOverScreen
+{
+    NSLog(@"game over");
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    PZGameOverViewController *gameOverVC = [sb instantiateViewControllerWithIdentifier:@"GameOverController"];
+    gameOverVC.modalTransitionStyle = UIModalPresentationCustom;
+    gameOverVC.transitioningDelegate = self;
+    [self presentViewController:gameOverVC animated:YES completion:nil];
+}
+
+#pragma mark - Transitioning Delegate methods
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
+{
+    FadeTransition *transition = [[FadeTransition alloc] init];
+    return transition;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
+{
+    FadeTransition *transition = [[FadeTransition alloc] init];
+    return transition;
 }
 
 @end

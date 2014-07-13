@@ -305,10 +305,13 @@ static int patternConnections = 4;
 {
     if (isUserDrawing) {
         CGPathRelease([self.userLineLayer path]);
-        for (int i=0; i < self.userLineLayers.count; i++) {
-            [self.userLineLayers[i] removeFromSuperlayer];
-        }
-        [self.userLineLayers removeAllObjects];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            for (int i=0; i < self.userLineLayers.count; i++) {
+                [self.userLineLayers[i] removeFromSuperlayer];
+            }
+            [self.userLineLayers removeAllObjects];
+        });
         isUserDrawing = false;
     }
 }
@@ -356,8 +359,8 @@ static int patternConnections = 4;
         self.isFirstRun = false;
         self.nodeStrokeEndTriggerIndex = 0;
         self.lastPatternRefreshTimeInterval = 0;
-        [self resetGrid];
-        [self createPattern];
+//        [self resetGrid];
+//        [self createPattern];
     }
 
 }

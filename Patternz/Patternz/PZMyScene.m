@@ -16,11 +16,13 @@
 @property (nonatomic,strong) NSMutableArray *nodeStrokeEndTriggers;
 @property (nonatomic,strong) NSMutableArray *currentNodePoints;
 @property (nonatomic,strong) NSMutableArray *userLineLayers;
+@property (nonatomic,strong) NSMutableArray *userPathNodePoints;
 
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval lastPatternRefreshTimeInterval;
 @property (nonatomic, assign) bool isFirstRun;
 @property (nonatomic,strong) SKLabelNode *timerLabel;
+@property (nonatomic,strong) SKLabelNode *statusLabel;
 @property (nonatomic, strong) CAShapeLayer *lineLayer;
 @property (nonatomic, strong) CAShapeLayer *userLineLayer;
 @property (nonatomic, assign) CGMutablePathRef userPathToDraw;
@@ -54,7 +56,7 @@ static int patternConnections = 4;
 
         self.backgroundColor = [SKColor colorWithRed:99.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
         
-        SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Wawati"];
+        SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"HoeflerText-BlackItalic"];
         
         myLabel.text = @"Patternz";
         myLabel.fontSize = 24;
@@ -64,6 +66,7 @@ static int patternConnections = 4;
         [self resetGrid];
         [self createBoard];
         [self createTimer];
+        [self createStatusLabel];
         self.isFirstRun = true;
         
         self.physicsWorld.contactDelegate = self;
@@ -255,24 +258,6 @@ static int patternConnections = 4;
     [self.userLineLayers addObject:self.userLineLayer];
 }
 
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    /* Called when a touch begins */
-    UITouch *touch = [touches anyObject];
-    CGPoint location = [touch locationInNode:self];
-
-    SKNode *node = [self nodeAtPoint:location];
-    if (node.name != nil){
-        isUserDrawing = true;
-        NSLog(@"%f, %f",node.position.x, node.position.y);
-//        [self createRippleEffectOnNode:node];
-        [self setUserAnchorPointFromNode:node];
-        self.userLineLayers = [[NSMutableArray alloc] init];
-        [self createUserLineLayer];
-    }
-    
-}
-
-
 -(BOOL)checkIfUserLineCollidedWithNodeAtPoint:(CGPoint)point
 {
     for (int i =0; i < self.nodes.count; i++) {
@@ -282,11 +267,32 @@ static int patternConnections = 4;
             NSLog(@"node collided: %@",node.name);
             [self createRippleEffectOnNode:node];
             [self setUserAnchorPointFromNode:node];
+            [self addNodeToUserNodePoints:node];
             return YES;
         }
     }
     return NO;
 }
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    /* Called when a touch begins */
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInNode:self];
+    
+    SKNode *node = [self nodeAtPoint:location];
+    if (node.name != nil){
+        isUserDrawing = true;
+        NSLog(@"%f, %f",node.position.x, node.position.y);
+        //        [self createRippleEffectOnNode:node];
+        [self setUserAnchorPointFromNode:node];
+        [self removeUserLineLayersFromSuperLayer];
+        self.userLineLayers = [[NSMutableArray alloc] init];
+        self.userPathNodePoints = [[NSMutableArray alloc] init];
+        [self createUserLineLayer];
+    }
+    
+}
+
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -305,21 +311,54 @@ static int patternConnections = 4;
 {
     if (isUserDrawing) {
         CGPathRelease([self.userLineLayer path]);
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            for (int i=0; i < self.userLineLayers.count; i++) {
-                [self.userLineLayers[i] removeFromSuperlayer];
-            }
-            [self.userLineLayers removeAllObjects];
-        });
+        [self evaluatePattern];
         isUserDrawing = false;
     }
 }
 
--(void)setUserAnchorPointFromNode:(SKNode*)node
+-(void)evaluatePattern
+{
+    if ([self.currentNodePoints isEqualToArray:self.userPathNodePoints]) {
+        timeCount +=5;
+        [self updateStatusWithMessage:@"Correct!!"];
+    }else{
+        [self updateStatusWithMessage:@"Wrong!!"];
+//        timeCount -= 5;
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self removeUserLineLayersFromSuperLayer];
+        [self.userLineLayers removeAllObjects];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self resetGrid];
+            [self createPattern];
+        });
+    });
+}
+
+-(void)removeUserLineLayersFromSuperLayer
+{
+    for (int i=0; i < self.userLineLayers.count; i++) {
+        [self.userLineLayers[i] removeFromSuperlayer];
+    }
+}
+
+-(void)addNodeToUserNodePoints:(SKNode*)node
+{
+    CGPoint nodeCoordinates = [self getCoordinatesFromNode:node];
+    CGPoint currentDotCenterPoint = [self getCenterPointOfDotWithCoords:nodeCoordinates];
+    [self.userPathNodePoints addObject:[NSValue valueWithCGPoint:currentDotCenterPoint]];
+}
+
+-(CGPoint)getCoordinatesFromNode:(SKNode*)node
 {
     NSArray *nodeNameSplitArray = [node.name componentsSeparatedByString:@","];
     CGPoint nodeCoordinates = CGPointMake([nodeNameSplitArray[0] floatValue], [nodeNameSplitArray[1] floatValue]);
+    return nodeCoordinates;
+}
+
+-(void)setUserAnchorPointFromNode:(SKNode*)node
+{
+    CGPoint nodeCoordinates = [self getCoordinatesFromNode:node];
     CGPoint newAnchorPoint = [self getCenterPointOfDotWithCoords:nodeCoordinates];
     [self completePathBetweenPointA:self.userPathAnchorPoint andPointB:newAnchorPoint];
     self.userPathAnchorPoint = newAnchorPoint;
@@ -352,33 +391,6 @@ static int patternConnections = 4;
     }
 }
 
-- (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
-    
-    self.lastPatternRefreshTimeInterval += timeSinceLast;
-    if ((self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) && timeCount != 0) {
-        self.isFirstRun = false;
-        self.nodeStrokeEndTriggerIndex = 0;
-        self.lastPatternRefreshTimeInterval = 0;
-//        [self resetGrid];
-//        [self createPattern];
-    }
-
-}
-
-
--(void)update:(CFTimeInterval)currentTime {
-    /* Called before each frame is rendered */
-    CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
-    self.lastUpdateTimeInterval = currentTime;
-    if (timeSinceLast > 5) {
-        timeSinceLast = 5.0 / 60.0;
-        self.lastUpdateTimeInterval = currentTime;
-    }
-//    NSLog(@"presentation layer strokeEnd: %f", [self.lineLayer.presentationLayer strokeEnd]);
-    [self animateRipple];
-    [self updateWithTimeSinceLastUpdate:timeSinceLast];
-}
-
 -(void)animateRipple {
     
     if (self.nodeStrokeEndTriggerIndex < self.nodeStrokeEndTriggers.count &&
@@ -397,7 +409,7 @@ static int patternConnections = 4;
     // start timer
     NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
-    timeCount = 5; // instance variable
+    timeCount = 25; // instance variable
     self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.timerLabel.fontSize = 14;
     self.timerLabel.fontColor = [UIColor blackColor];
@@ -414,11 +426,11 @@ static int patternConnections = 4;
         if(timeCount == 0) {
             // display correct dialog with button
             [timer invalidate];
-//            [self timerExpired];
-            [self addToTimer:10];
+            [self timerExpired];
+//            [self addToTimer:10];
         }
     }
-    self.timerLabel.text = [NSString stringWithFormat:@"%d:%02d",timeCount/60, timeCount % 60];
+    self.timerLabel.text = [NSString stringWithFormat:@"%02d",timeCount % 60];
 }
 
 -(void)addToTimer:(int)value
@@ -430,18 +442,79 @@ static int patternConnections = 4;
     // display an alert or something when the timer expires.
     NSLog(@"timer expired");
     [self.lineLayer removeFromSuperlayer];
+    [self removeUserLineLayersFromSuperLayer];
     self.nodeStrokeEndTriggerIndex = 0;
     self.lastPatternRefreshTimeInterval = 0;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"GameOver" object:nil];
     
 }
 
+- (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
+    
+    self.lastPatternRefreshTimeInterval += timeSinceLast;
+    //    if ((self.lastPatternRefreshTimeInterval > 5 || self.isFirstRun) && timeCount != 0) {
+    //        self.isFirstRun = false;
+    //        self.nodeStrokeEndTriggerIndex = 0;
+    //        self.lastPatternRefreshTimeInterval = 0;
+    //        [self resetGrid];
+    //        [self createPattern];
+    //    }
+    if (self.isFirstRun) {
+        self.isFirstRun = false;
+        [self resetGrid];
+        [self createPattern];
+    }
+    
+}
+
+
+-(void)update:(CFTimeInterval)currentTime {
+    /* Called before each frame is rendered */
+    CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
+    self.lastUpdateTimeInterval = currentTime;
+    if (timeSinceLast > 5) {
+        timeSinceLast = 5.0 / 60.0;
+        self.lastUpdateTimeInterval = currentTime;
+    }
+    //    NSLog(@"presentation layer strokeEnd: %f", [self.lineLayer.presentationLayer strokeEnd]);
+    [self animateRipple];
+    [self updateWithTimeSinceLastUpdate:timeSinceLast];
+}
+
 -(void) startGame {
     NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
-    timeCount = 5; // instance variable
-    [self resetGrid];
-    [self createPattern];
+    timeCount = 25; // instance variable
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self resetGrid];
+        [self createPattern];
+    });
+}
+
+-(void)createStatusLabel{
+    self.statusLabel = [SKLabelNode labelNodeWithFontNamed:@"Verdana-Italic"];
+    self.statusLabel.fontSize = 14;
+    self.statusLabel.fontColor = [UIColor blackColor];
+    self.statusLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 140);
+    [self updateStatusWithMessage:@"Starting Game"];
+    [self addChild:self.statusLabel];
+}
+
+-(void)updateStatusWithMessage:(NSString*)message
+{
+    if ([message isEqualToString:@"Correct!!"]) {
+        self.statusLabel.fontColor = [UIColor yellowColor];
+    }else if([message isEqualToString:@"Wrong!!"]){
+        self.statusLabel.fontColor = [UIColor redColor];
+    }
+    self.statusLabel.text = message;
+    SKAction *fadeIn = [SKAction fadeInWithDuration:0.2];
+    SKAction *fadeOut = [SKAction fadeOutWithDuration:0.2];
+    SKAction * actionScaleUp = [SKAction scaleTo:1.5 duration:0.5];
+    SKAction * actionScaleDown = [SKAction scaleTo:1.0 duration:0.5];
+    SKAction *groupFadeIn =[SKAction group:@[fadeIn, actionScaleUp]];
+    SKAction *groupFadeOut =[SKAction group:@[fadeOut, actionScaleDown]];
+    [self.statusLabel runAction:[SKAction sequence:@[groupFadeIn,groupFadeOut]]];
 }
 
 @end

@@ -12,21 +12,27 @@
 
 @interface PZMyScene()
 @property (nonatomic,strong) NSMutableArray *grid;
+@property (nonatomic,strong) NSMutableArray *nodes;
 @property (nonatomic,strong) NSMutableArray *nodeStrokeEndTriggers;
 @property (nonatomic,strong) NSMutableArray *currentNodePoints;
+@property (nonatomic,strong) NSMutableArray *userLineLayers;
 
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval lastPatternRefreshTimeInterval;
 @property (nonatomic, assign) bool isFirstRun;
 @property (nonatomic,strong) SKLabelNode *timerLabel;
 @property (nonatomic, strong) CAShapeLayer *lineLayer;
+@property (nonatomic, strong) CAShapeLayer *userLineLayer;
+@property (nonatomic, assign) CGMutablePathRef userPathToDraw;
+@property (nonatomic, assign) CGPoint userPathAnchorPoint;
+
 @property (nonatomic, assign) int nodeStrokeEndTriggerIndex;
 @end
 
-static float xOffset = 80.0;
-static float yOffset = 200.0;
-static float rowWidth = 80.0;
-static float dotWidth = 30;
+static float xOffset = 60.0;
+static float yOffset = 180.0;
+static float rowWidth = 100.0;
+static float dotWidth = 40;
 static int gridSize = 3; //nxn , n=3
 static int patternConnections = 4;
 
@@ -37,6 +43,8 @@ static int patternConnections = 4;
 
 {
     int timeCount;
+    bool isUserDrawing;
+    NSString *_lastCollidedNodeName;
 }
 
 -(id)initWithSize:(CGSize)size {    
@@ -80,9 +88,12 @@ static int patternConnections = 4;
 
 -(void) createBoard
 {
+    self.nodes = [[NSMutableArray alloc] init];
     for (int i =0; i<gridSize; i++) {
         for (int j=0; j<gridSize ; j++) {
-            [self addChild:[self createNodeAtPosition:CGPointMake(i, j)]];
+            SKNode *node = [self createNodeAtPosition:CGPointMake(i, j)];
+            [self addChild:node];
+            [self.nodes addObject:node];
         }
     }
 
@@ -152,7 +163,7 @@ static int patternConnections = 4;
 {
     CGFloat x,y;
     x = xOffset + (rowWidth * coords.x);
-    y = yOffset + (rowWidth * coords.y) + dotWidth/4;
+    y = yOffset + (rowWidth * coords.y);
     return CGPointMake(x,y);
 }
 
@@ -227,14 +238,97 @@ static int patternConnections = 4;
     return YES;
 }
 
+
+-(void) createUserLineLayer
+{
+    CAShapeLayer *userLineLayer = [CAShapeLayer layer];
+    userLineLayer.name = @"Userline";
+    userLineLayer.strokeColor = [UIColor colorWithRed:189.0/255.0
+                                                     green:67.0/255.0
+                                                      blue:67.0/255.0
+                                                     alpha:1.0].CGColor;
+    userLineLayer.fillColor = nil;
+    userLineLayer.lineWidth = 4.0;
+    
+    [self.view.layer addSublayer:userLineLayer];
+    self.userLineLayer = userLineLayer;
+    [self.userLineLayers addObject:self.userLineLayer];
+}
+
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     /* Called when a touch begins */
     UITouch *touch = [touches anyObject];
     CGPoint location = [touch locationInNode:self];
+
     SKNode *node = [self nodeAtPoint:location];
-    NSLog(@"%f, %f",node.position.x, node.position.y);
-    [self createRippleEffectOnNode:node];
+    if (node.name != nil){
+        isUserDrawing = true;
+        NSLog(@"%f, %f",node.position.x, node.position.y);
+//        [self createRippleEffectOnNode:node];
+        [self setUserAnchorPointFromNode:node];
+        self.userLineLayers = [[NSMutableArray alloc] init];
+        [self createUserLineLayer];
+    }
     
+}
+
+
+-(BOOL)checkIfUserLineCollidedWithNodeAtPoint:(CGPoint)point
+{
+    for (int i =0; i < self.nodes.count; i++) {
+        SKNode *node = self.nodes[i];
+        if ([node containsPoint:point] && ![node.name isEqualToString:_lastCollidedNodeName]) {
+            _lastCollidedNodeName = node.name;
+            NSLog(@"node collided: %@",node.name);
+            [self createRippleEffectOnNode:node];
+            [self setUserAnchorPointFromNode:node];
+            return YES;
+        }
+    }
+    return NO;
+}
+
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (isUserDrawing) {
+        UITouch *touch = [touches anyObject];
+        CGPoint location = [touch locationInNode:self];
+        if ([self checkIfUserLineCollidedWithNodeAtPoint:location]) {
+            [self createUserLineLayer];
+        }
+        [self completePathBetweenPointA:self.userPathAnchorPoint andPointB:location];
+        [self.userLineLayer didChangeValueForKey:@"path"];
+    }
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (isUserDrawing) {
+        CGPathRelease([self.userLineLayer path]);
+        for (int i=0; i < self.userLineLayers.count; i++) {
+            [self.userLineLayers[i] removeFromSuperlayer];
+        }
+        [self.userLineLayers removeAllObjects];
+        isUserDrawing = false;
+    }
+}
+
+-(void)setUserAnchorPointFromNode:(SKNode*)node
+{
+    NSArray *nodeNameSplitArray = [node.name componentsSeparatedByString:@","];
+    CGPoint nodeCoordinates = CGPointMake([nodeNameSplitArray[0] floatValue], [nodeNameSplitArray[1] floatValue]);
+    CGPoint newAnchorPoint = [self getCenterPointOfDotWithCoords:nodeCoordinates];
+    [self completePathBetweenPointA:self.userPathAnchorPoint andPointB:newAnchorPoint];
+    self.userPathAnchorPoint = newAnchorPoint;
+}
+
+-(void)completePathBetweenPointA:(CGPoint)pointA andPointB:(CGPoint)pointB
+{
+    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, self.view.bounds.size.height);
+    self.userPathToDraw = CGPathCreateMutable();
+    self.userLineLayer.path = self.userPathToDraw;
+    CGPathMoveToPoint(self.userPathToDraw, &flipVertical,pointA.x, pointA.y);
+    CGPathAddLineToPoint(self.userPathToDraw, &flipVertical,pointB.x, pointB.y);
 }
 
 -(void)createRippleEffectOnNode:(SKNode *)node
@@ -317,8 +411,8 @@ static int patternConnections = 4;
         if(timeCount == 0) {
             // display correct dialog with button
             [timer invalidate];
-            [self timerExpired];
-//            [self addToTimer:10];
+//            [self timerExpired];
+            [self addToTimer:10];
         }
     }
     self.timerLabel.text = [NSString stringWithFormat:@"%d:%02d",timeCount/60, timeCount % 60];

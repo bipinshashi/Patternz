@@ -27,6 +27,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.currentScoreLabel.text = [NSString stringWithFormat:@"%d Patternz",self.currentScore];
+    self.bestScoreLabel.text = [NSString stringWithFormat:@"%d Patternz",[[NSUserDefaults standardUserDefaults] integerForKey:@"BestScore"]];
     // Do any additional setup after loading the view.
 }
 

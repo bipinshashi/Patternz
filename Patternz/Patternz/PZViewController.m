@@ -16,7 +16,7 @@
 
 - (void)viewWillLayoutSubviews
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pushGameOverScreen) name:@"GameOver" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pushGameOverScreen:) name:@"GameOver" object:nil];
     [super viewWillLayoutSubviews];
     // Configure the view.
     SKView * skView = (SKView *)self.view;
@@ -54,11 +54,13 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
--(void)pushGameOverScreen
+-(void)pushGameOverScreen:(NSNotification *)notification
 {
+    NSDictionary *dict = [notification object];
     NSLog(@"game over");
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     PZGameOverViewController *gameOverVC = [sb instantiateViewControllerWithIdentifier:@"GameOverController"];
+    gameOverVC.currentScore = [[dict objectForKey:@"score"] integerValue];
     gameOverVC.modalTransitionStyle = UIModalPresentationCustom;
     gameOverVC.transitioningDelegate = self;
     [self presentViewController:gameOverVC animated:YES completion:nil];

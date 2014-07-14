@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface PZGameOverViewController : UIViewController
+@property (nonatomic, assign) int currentScore;
+@property (strong, nonatomic) IBOutlet UILabel *currentScoreLabel;
+@property (strong, nonatomic) IBOutlet UILabel *bestScoreLabel;
 
 @end

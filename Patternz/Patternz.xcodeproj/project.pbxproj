@@ -28,6 +28,10 @@
 		D4C917EE19434DA40089083F /* PatternzTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C917ED19434DA40089083F /* PatternzTests.m */; };
 		D4C917F819436D350089083F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917F719436D350089083F /* QuartzCore.framework */; };
 		D4C917FB1944A3DF0089083F /* PZDot.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C917FA1944A3DF0089083F /* PZDot.m */; };
+		D4F3543E19745D85000B4396 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F3543819745D85000B4396 /* libTestFlight.a */; };
+		D4F3543F19745D85000B4396 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D4F3543919745D85000B4396 /* README.md */; };
+		D4F3544019745D85000B4396 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = D4F3543A19745D85000B4396 /* release_notes.md */; };
+		D4F3544219745DC9000B4396 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F3544119745DC9000B4396 /* libz.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +75,13 @@
 		D4C917F719436D350089083F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		D4C917F91944A3DF0089083F /* PZDot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PZDot.h; sourceTree = "<group>"; };
 		D4C917FA1944A3DF0089083F /* PZDot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PZDot.m; sourceTree = "<group>"; };
+		D4F3543819745D85000B4396 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		D4F3543919745D85000B4396 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		D4F3543A19745D85000B4396 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
+		D4F3543B19745D85000B4396 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		D4F3543C19745D85000B4396 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		D4F3543D19745D85000B4396 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		D4F3544119745DC9000B4396 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,9 +89,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4F3544219745DC9000B4396 /* libz.dylib in Frameworks */,
 				D4C917F819436D350089083F /* QuartzCore.framework in Frameworks */,
 				D4C917BE19434DA40089083F /* CoreGraphics.framework in Frameworks */,
 				D4C917C019434DA40089083F /* UIKit.framework in Frameworks */,
+				D4F3543E19745D85000B4396 /* libTestFlight.a in Frameworks */,
 				D4C917C219434DA40089083F /* SpriteKit.framework in Frameworks */,
 				D4C917BC19434DA40089083F /* Foundation.framework in Frameworks */,
 			);
@@ -143,6 +156,7 @@
 		D4C917BA19434DA40089083F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D4F3544119745DC9000B4396 /* libz.dylib */,
 				D4C917F719436D350089083F /* QuartzCore.framework */,
 				D4C917BB19434DA40089083F /* Foundation.framework */,
 				D4C917BD19434DA40089083F /* CoreGraphics.framework */,
@@ -160,6 +174,7 @@
 				D4699D881954804200F3294B /* Controllers */,
 				D4C917CC19434DA40089083F /* PZAppDelegate.h */,
 				D4C917CD19434DA40089083F /* PZAppDelegate.m */,
+				D4F3543719745D85000B4396 /* TestFlightSDK3.0.2 */,
 				D4C917CF19434DA40089083F /* Main.storyboard */,
 				D4C917D519434DA40089083F /* PZMyScene.h */,
 				D4C917D619434DA40089083F /* PZMyScene.m */,
@@ -197,6 +212,19 @@
 				D4C917EA19434DA40089083F /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D4F3543719745D85000B4396 /* TestFlightSDK3.0.2 */ = {
+			isa = PBXGroup;
+			children = (
+				D4F3543819745D85000B4396 /* libTestFlight.a */,
+				D4F3543919745D85000B4396 /* README.md */,
+				D4F3543A19745D85000B4396 /* release_notes.md */,
+				D4F3543B19745D85000B4396 /* TestFlight+AsyncLogging.h */,
+				D4F3543C19745D85000B4396 /* TestFlight+ManualSessions.h */,
+				D4F3543D19745D85000B4396 /* TestFlight.h */,
+			);
+			path = TestFlightSDK3.0.2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -247,6 +275,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Bipen Sasi";
 				TargetAttributes = {
+					D4C917B719434DA40089083F = {
+						DevelopmentTeam = P3GTA8528Y;
+					};
 					D4C917DF19434DA40089083F = {
 						TestTargetID = D4C917B719434DA40089083F;
 					};
@@ -276,8 +307,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4F3544019745D85000B4396 /* release_notes.md in Resources */,
 				D4C917C819434DA40089083F /* InfoPlist.strings in Resources */,
 				D4C917DB19434DA40089083F /* Images.xcassets in Resources */,
+				D4F3543F19745D85000B4396 /* README.md in Resources */,
 				D4C917D919434DA40089083F /* Spaceship.png in Resources */,
 				D4C917D119434DA40089083F /* Main.storyboard in Resources */,
 			);
@@ -429,10 +462,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Patternz/Patternz-Prefix.pch";
 				INFOPLIST_FILE = "Patternz/Patternz-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Patternz/TestFlightSDK3.0.2",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
 				WRAPPER_EXTENSION = app;
 			};
@@ -443,10 +483,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Patternz/Patternz-Prefix.pch";
 				INFOPLIST_FILE = "Patternz/Patternz-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Patternz/TestFlightSDK3.0.2",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "AEF86944-1D22-4F93-B96B-5F3D30F45840";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
 				WRAPPER_EXTENSION = app;
 			};

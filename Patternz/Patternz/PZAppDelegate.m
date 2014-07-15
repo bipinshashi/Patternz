@@ -7,12 +7,14 @@
 //
 
 #import "PZAppDelegate.h"
+#import "TestFlight.h"
 
 @implementation PZAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [TestFlight takeOff:@"5e5cccb7-d2d6-4025-b98f-5a3eccce3804"];
     return YES;
 }
 							

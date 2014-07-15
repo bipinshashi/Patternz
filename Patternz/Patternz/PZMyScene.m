@@ -49,6 +49,7 @@ static int gridSize = 3; //nxn , n=3
     int timeCount;
     int correctPatternCount;
     bool isUserDrawing;
+    bool isPatternDrawing;
     bool isStartScreenShowing;
     bool isFirstRun;
     int patternConnections;
@@ -126,6 +127,7 @@ static int gridSize = 3; //nxn , n=3
 
 -(void) createPattern
 {
+    isPatternDrawing = true;
     self.lineLayer = [CAShapeLayer layer];
     self.lineLayer.name = @"line";
     self.lineLayer.strokeColor = [UIColor colorWithRed:189.0/255.0
@@ -147,6 +149,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathRelease(self.lineLayer.path);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, patternDisplayTime * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self.lineLayer removeFromSuperlayer];
+        isPatternDrawing = false;
     });
 
 }
@@ -290,7 +293,7 @@ static int gridSize = 3; //nxn , n=3
             [self startGame];
         }
     }else{
-        if (node.name != nil){
+        if (node.name != nil && !isPatternDrawing){
             isUserDrawing = true;
             NSLog(@"%f, %f",node.position.x, node.position.y);
             //        [self createRippleEffectOnNode:node];
@@ -531,11 +534,10 @@ static int gridSize = 3; //nxn , n=3
     self.timerLabel.alpha = 1;
     self.startButtonNode.alpha = 0;
     self.startLabel.alpha = 0;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self updateStatusWithMessage:@"Starting Game"];
-    });
+    self.statusLabel.text = @"";
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self updateStatusWithMessage:@"Starting Game"];
         correctPatternCount = 0;
         [self resetGrid];
         [self createPattern];
@@ -578,10 +580,10 @@ static int gridSize = 3; //nxn , n=3
         self.statusLabel.fontColor = [UIColor redColor];
     }
     self.statusLabel.text = message;
-    SKAction *fadeIn = [SKAction fadeInWithDuration:0.2];
-    SKAction *fadeOut = [SKAction fadeOutWithDuration:0.2];
-    SKAction * actionScaleUp = [SKAction scaleTo:1.5 duration:0.3];
-    SKAction * actionScaleDown = [SKAction scaleTo:1.0 duration:0.3];
+    SKAction *fadeIn = [SKAction fadeInWithDuration:0.5];
+    SKAction *fadeOut = [SKAction fadeOutWithDuration:0.5];
+    SKAction * actionScaleUp = [SKAction scaleTo:1.5 duration:0.5];
+    SKAction * actionScaleDown = [SKAction scaleTo:1.0 duration:0.5];
 //    SKAction *groupFadeOutFadeIn = [SKAction sequence:@[fadeOut,fadeIn]];
     SKAction *groupFadeInScale =[SKAction group:@[fadeIn, actionScaleUp]];
     SKAction *groupFadeOutScale =[SKAction group:@[fadeOut, actionScaleDown]];

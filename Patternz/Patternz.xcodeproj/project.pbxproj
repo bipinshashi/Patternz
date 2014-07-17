@@ -19,7 +19,6 @@
 		D4C917D119434DA40089083F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4C917CF19434DA40089083F /* Main.storyboard */; };
 		D4C917D419434DA40089083F /* PZViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C917D319434DA40089083F /* PZViewController.m */; };
 		D4C917D719434DA40089083F /* PZMyScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C917D619434DA40089083F /* PZMyScene.m */; };
-		D4C917D919434DA40089083F /* Spaceship.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C917D819434DA40089083F /* Spaceship.png */; };
 		D4C917DB19434DA40089083F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4C917DA19434DA40089083F /* Images.xcassets */; };
 		D4C917E219434DA40089083F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917E119434DA40089083F /* XCTest.framework */; };
 		D4C917E319434DA40089083F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BB19434DA40089083F /* Foundation.framework */; };
@@ -65,7 +64,6 @@
 		D4C917D319434DA40089083F /* PZViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PZViewController.m; sourceTree = "<group>"; };
 		D4C917D519434DA40089083F /* PZMyScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PZMyScene.h; sourceTree = "<group>"; };
 		D4C917D619434DA40089083F /* PZMyScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PZMyScene.m; sourceTree = "<group>"; };
-		D4C917D819434DA40089083F /* Spaceship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spaceship.png; sourceTree = "<group>"; };
 		D4C917DA19434DA40089083F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D4C917E019434DA40089083F /* PatternzTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PatternzTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C917E119434DA40089083F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -174,11 +172,10 @@
 				D4699D881954804200F3294B /* Controllers */,
 				D4C917CC19434DA40089083F /* PZAppDelegate.h */,
 				D4C917CD19434DA40089083F /* PZAppDelegate.m */,
-				D4F3543719745D85000B4396 /* TestFlightSDK3.0.2 */,
 				D4C917CF19434DA40089083F /* Main.storyboard */,
 				D4C917D519434DA40089083F /* PZMyScene.h */,
 				D4C917D619434DA40089083F /* PZMyScene.m */,
-				D4C917D819434DA40089083F /* Spaceship.png */,
+				D4F3543719745D85000B4396 /* TestFlightSDK3.0.2 */,
 				D4C917DA19434DA40089083F /* Images.xcassets */,
 				D4C917C419434DA40089083F /* Supporting Files */,
 			);
@@ -311,7 +308,6 @@
 				D4C917C819434DA40089083F /* InfoPlist.strings in Resources */,
 				D4C917DB19434DA40089083F /* Images.xcassets in Resources */,
 				D4F3543F19745D85000B4396 /* README.md in Resources */,
-				D4C917D919434DA40089083F /* Spaceship.png in Resources */,
 				D4C917D119434DA40089083F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -493,7 +489,7 @@
 					"$(PROJECT_DIR)/Patternz/TestFlightSDK3.0.2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "AEF86944-1D22-4F93-B96B-5F3D30F45840";
+				PROVISIONING_PROFILE = "0267EE26-D4A9-4373-905E-33F1F95EE785";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
 				WRAPPER_EXTENSION = app;
 			};

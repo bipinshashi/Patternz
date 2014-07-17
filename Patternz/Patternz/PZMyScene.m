@@ -10,6 +10,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import "PZDot.h"
 
+#define is4InchScreen  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+
 @interface PZMyScene()
 @property (nonatomic,strong) NSMutableArray *grid;
 @property (nonatomic,strong) NSMutableArray *nodes;
@@ -33,8 +35,6 @@
 @property (nonatomic, assign) int nodeStrokeEndTriggerIndex;
 @end
 
-static float xOffset = 60.0;
-static float yOffset = 180.0;
 static float rowWidth = 100.0;
 static float dotWidth = 40;
 static int gridSize = 3; //nxn , n=3
@@ -48,10 +48,12 @@ static int gridSize = 3; //nxn , n=3
 {
     int timeCount;
     int correctPatternCount;
+    float xOffset, yOffset;
     bool isUserDrawing;
     bool isPatternDrawing;
     bool isStartScreenShowing;
     bool isFirstRun;
+    bool isTitleSet;
     int patternConnections;
     int patternDisplayTime;//in seconds
     NSString *_lastCollidedNodeName;
@@ -62,24 +64,40 @@ static int gridSize = 3; //nxn , n=3
         /* Setup your scene here */
         NSLog(@"Size: %@",NSStringFromCGSize(size));
 
-        self.backgroundColor = [SKColor colorWithRed:99.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
+        self.backgroundColor = [SKColor colorWithRed:100.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
         
         self.titleLabel = [SKLabelNode labelNodeWithFontNamed:@"HoeflerText-BlackItalic"];
         
         self.titleLabel.text = @"Patternz";
         self.titleLabel.fontSize = 24;
         self.titleLabel.fontColor = [UIColor blackColor];
-        self.titleLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 50);
+        self.titleLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 80);
         [self addChild:self.titleLabel];
+        [self setDefaults];
         
-        patternConnections = 4;
-        patternDisplayTime = 2;
         [self showStartScreen];
         
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startGame) name:@"TryAgain" object:nil];
+        [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(appWillEnterBackground)
+         name:UIApplicationWillResignActiveNotification
+         object:NULL];
     }
     return self;
+}
+
+-(void)setDefaults
+{
+    xOffset = 60.0;
+    if (is4InchScreen) {
+        yOffset = 150.0;
+    }else{
+        yOffset = 100.0;
+    }
+    patternConnections = 4;
+    patternDisplayTime = 2;
 }
 
 -(void)resetGrid
@@ -149,7 +167,9 @@ static int gridSize = 3; //nxn , n=3
     CGPathRelease(self.lineLayer.path);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, patternDisplayTime * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self.lineLayer removeFromSuperlayer];
-        isPatternDrawing = false;
+        if (!isStartScreenShowing) {
+            isPatternDrawing = false;
+        }
     });
 
 }
@@ -289,18 +309,20 @@ static int gridSize = 3; //nxn , n=3
     
     SKNode *node = [self nodeAtPoint:location];
     if (isStartScreenShowing) {
-        if ([node.name isEqualToString:@"startNode"]) {
-            [self startGame];
-        }
+        isStartScreenShowing = false;
+        isPatternDrawing = true;
+        [self.startLabel removeAllActions];
+        self.startLabel.alpha = 0;
+        [self startGame];
     }else{
         if (node.name != nil && !isPatternDrawing){
             isUserDrawing = true;
             NSLog(@"%f, %f",node.position.x, node.position.y);
-            //        [self createRippleEffectOnNode:node];
             [self setUserAnchorPointFromNode:node];
             [self removeUserLineLayersFromSuperLayer];
             self.userLineLayers = [[NSMutableArray alloc] init];
             self.userPathNodePoints = [[NSMutableArray alloc] init];
+            _lastCollidedNodeName = @"";
             [self createUserLineLayer];
         }
     }
@@ -330,9 +352,8 @@ static int gridSize = 3; //nxn , n=3
         if (self.userLineLayers.count >= self.userPathNodePoints.count) {
             [[self.userLineLayers lastObject] removeFromSuperlayer];
         }
-        
-        [self evaluatePattern];
         isUserDrawing = false;
+        [self evaluatePattern];
     }
 }
 
@@ -346,7 +367,6 @@ static int gridSize = 3; //nxn , n=3
         [self setDifficulty];
     }else{
         [self updateStatusWithMessage:@"Wrong!!"];
-//        timeCount -= 5;
     }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self removeUserLineLayersFromSuperLayer];
@@ -445,7 +465,7 @@ static int gridSize = 3; //nxn , n=3
 //    [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
     timeCount = 10; // instance variable
     self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
-    self.timerLabel.fontSize = 14;
+    self.timerLabel.fontSize = 16;
     self.timerLabel.fontColor = [UIColor blackColor];
     self.timerLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 100);
     self.timerLabel.alpha = 0;
@@ -522,22 +542,34 @@ static int gridSize = 3; //nxn , n=3
 }
 
 -(void) startGame {
+    isPatternDrawing = true;
     self.titleLabel.text = @"Patternz";
-    timeCount = 15;
+    if (!isTitleSet) {
+        isTitleSet = true;
+        SKAction *liftoff = [SKAction moveByX:0 y:30 duration: 1];
+        [self.titleLabel runAction:liftoff];
+    }
+    timeCount = 17;
     patternConnections = 3;
     patternDisplayTime = 2;
-    isStartScreenShowing = false;
     NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
     
     //reset alpha values
-    self.timerLabel.alpha = 1;
+    self.timerLabel.alpha = 0;
     self.startButtonNode.alpha = 0;
     self.startLabel.alpha = 0;
-    self.statusLabel.text = @"";
+    self.statusLabel.text = @"Starting Game";
+    self.statusLabel.fontColor = [UIColor blackColor];
+    
+    SKAction *fadeIn = [SKAction fadeInWithDuration:0.5];
+    SKAction *fadeOut = [SKAction fadeOutWithDuration:2.0];
+    SKAction * actionScaleUp = [SKAction scaleTo:1.5 duration:0.5];
+    SKAction *groupFadeInScale =[SKAction group:@[fadeIn, actionScaleUp]];
+    [self.statusLabel runAction:[SKAction sequence:@[groupFadeInScale,fadeOut]]];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self updateStatusWithMessage:@"Starting Game"];
+        self.timerLabel.alpha = 1;
         correctPatternCount = 0;
         [self resetGrid];
         [self createPattern];
@@ -555,20 +587,25 @@ static int gridSize = 3; //nxn , n=3
 
 -(void)createStartButton
 {
-    self.startButtonNode = [SKSpriteNode spriteNodeWithColor:[UIColor colorWithRed:190.0/255.0 green:59.0/255.0 blue:59.0/255.0 alpha:1]
-                                                                 size:CGSizeMake(200, 50)];
-    self.startButtonNode.position = CGPointMake(CGRectGetMidX(self.frame),70);
-    self.startButtonNode.name = @"startNode";//how the node is identified later
-    self.startButtonNode.zPosition = 1.0;
-    [self addChild:self.startButtonNode];
+//    self.startButtonNode = [SKSpriteNode spriteNodeWithColor:[UIColor colorWithRed:190.0/255.0 green:59.0/255.0 blue:59.0/255.0 alpha:1]
+//                                                                 size:CGSizeMake(200, 50)];
+//    self.startButtonNode.position = CGPointMake(CGRectGetMidX(self.frame),70);
+//    self.startButtonNode.name = @"startNode";//how the node is identified later
+//    self.startButtonNode.zPosition = 1.0;
+//    [self addChild:self.startButtonNode];
     
     self.startLabel = [SKLabelNode labelNodeWithFontNamed:@"Verdana-Italic"];
     self.startLabel.fontSize = 16;
-    self.startLabel.fontColor = [UIColor yellowColor];
-    self.startLabel.position = CGPointMake(CGRectGetMidX(self.startButtonNode.frame),CGRectGetHeight(self.startButtonNode.frame) + 12);
-    self.startLabel.text = @"START";
+    self.startLabel.fontColor = [UIColor blackColor];
+    self.startLabel.position = CGPointMake(CGRectGetMidX(self.frame),30);
+    self.startLabel.text = @"Touch to START";
     self.startLabel.zPosition = 2.0;
     self.startLabel.name = @"startNode";
+    SKAction *blink = [SKAction sequence:@[
+                                           [SKAction fadeOutWithDuration:0.25],
+                                           [SKAction fadeInWithDuration:0.25]]];
+    SKAction *blinkForever = [SKAction repeatActionForever:blink];
+    [self.startLabel runAction:blinkForever];
     [self addChild:self.startLabel];
 }
 
@@ -580,6 +617,7 @@ static int gridSize = 3; //nxn , n=3
         self.statusLabel.fontColor = [UIColor redColor];
     }
     self.statusLabel.text = message;
+    self.statusLabel.fontSize = 16;
     SKAction *fadeIn = [SKAction fadeInWithDuration:0.5];
     SKAction *fadeOut = [SKAction fadeOutWithDuration:0.5];
     SKAction * actionScaleUp = [SKAction scaleTo:1.5 duration:0.5];
@@ -600,5 +638,30 @@ static int gridSize = 3; //nxn , n=3
     isFirstRun = true;
     isStartScreenShowing = true;
 }
+
+- (void)appWillEnterBackground
+{
+    NSLog(@"entering background.......");
+    self.view.paused = YES;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:NULL];
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(appWillEnterForeground)
+     name:UIApplicationWillEnterForegroundNotification
+     object:NULL];
+}
+
+- (void)appWillEnterForeground
+{
+    self.view.paused = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:NULL];
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(appWillEnterBackground)
+     name:UIApplicationWillResignActiveNotification
+     object:NULL];
+}
+
+
 
 @end

@@ -66,10 +66,10 @@ static int gridSize = 3; //nxn , n=3
 
         self.backgroundColor = [SKColor colorWithRed:100.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
         
-        self.titleLabel = [SKLabelNode labelNodeWithFontNamed:@"HoeflerText-BlackItalic"];
+        self.titleLabel = [SKLabelNode labelNodeWithFontNamed:@"Copperplate-Bold"];
         
         self.titleLabel.text = @"Patternz";
-        self.titleLabel.fontSize = 24;
+        self.titleLabel.fontSize = 26;
         self.titleLabel.fontColor = [UIColor blackColor];
         self.titleLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 80);
         [self addChild:self.titleLabel];
@@ -96,7 +96,7 @@ static int gridSize = 3; //nxn , n=3
     }else{
         yOffset = 100.0;
     }
-    patternConnections = 4;
+    patternConnections = 3;
     patternDisplayTime = 2;
 }
 
@@ -380,12 +380,16 @@ static int gridSize = 3; //nxn , n=3
 
 -(void)setDifficulty
 {
-    if (correctPatternCount == 2) {
+    if (correctPatternCount ==0){
+        patternConnections = 3;
+        patternDisplayTime = 2;
+    }else if (correctPatternCount ==3){
         patternConnections = 4;
-    }else if (correctPatternCount ==5){
-        patternDisplayTime = 1;
     }else if (correctPatternCount ==7){
-        patternConnections = 5;
+         patternConnections = 5;
+    }else if (correctPatternCount ==10){
+        patternDisplayTime = 1;
+    }else if (correctPatternCount ==13){
     }
 }
 
@@ -464,8 +468,8 @@ static int gridSize = 3; //nxn , n=3
 //    NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
 //    [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
     timeCount = 10; // instance variable
-    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
-    self.timerLabel.fontSize = 16;
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Futura-MediumItalic"];
+    self.timerLabel.fontSize = 20;
     self.timerLabel.fontColor = [UIColor blackColor];
     self.timerLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 100);
     self.timerLabel.alpha = 0;
@@ -550,8 +554,6 @@ static int gridSize = 3; //nxn , n=3
         [self.titleLabel runAction:liftoff];
     }
     timeCount = 17;
-    patternConnections = 3;
-    patternDisplayTime = 2;
     NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
     
@@ -571,6 +573,7 @@ static int gridSize = 3; //nxn , n=3
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         self.timerLabel.alpha = 1;
         correctPatternCount = 0;
+        [self setDifficulty];
         [self resetGrid];
         [self createPattern];
     });

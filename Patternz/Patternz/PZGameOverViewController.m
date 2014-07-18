@@ -8,12 +8,17 @@
 
 #import "PZGameOverViewController.h"
 #import "PZViewController.h"
+#import <Social/Social.h>
+#import <Twitter/Twitter.h>
 
 @interface PZGameOverViewController ()
 
 @end
 
 @implementation PZGameOverViewController
+{
+    NSString *_shareText;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,7 +33,8 @@
 {
     [super viewDidLoad];
     self.currentScoreLabel.text = [NSString stringWithFormat:@"%d Patternz",self.currentScore];
-    self.bestScoreLabel.text = [NSString stringWithFormat:@"%d Patternz",[[NSUserDefaults standardUserDefaults] integerForKey:@"BestScore"]];
+    self.bestScoreLabel.text = [NSString stringWithFormat:@"%ld Patternz",(long)[[NSUserDefaults standardUserDefaults] integerForKey:@"BestScore"]];
+    _shareText = [NSString stringWithFormat:@"Try to beat my score of %@ in #patternz. Download here: http://bit.ly/patternz",self.currentScoreLabel.text ];
     // Do any additional setup after loading the view.
 }
 
@@ -37,7 +43,21 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (IBAction)shareButtonClicked:(id)sender {
+
+- (IBAction)facebookShareClicked:(id)sender {
+    SLComposeViewController *fbSheet = [SLComposeViewController
+                                           composeViewControllerForServiceType:SLServiceTypeFacebook];
+    [fbSheet setInitialText:_shareText];
+    [self presentViewController:fbSheet animated:YES completion:nil];
+    
+}
+
+- (IBAction)twitterShareClicked:(id)sender {
+    SLComposeViewController *tweetSheet = [SLComposeViewController
+                                           composeViewControllerForServiceType:SLServiceTypeTwitter];
+    [tweetSheet setInitialText:_shareText];
+    [self presentViewController:tweetSheet animated:YES completion:nil];
+    
 }
 
 - (IBAction)tryAgainButtonClicked:(id)sender {

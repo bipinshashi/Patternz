@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		D4699D8B1954806300F3294B /* PZGameOverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4699D8A1954806300F3294B /* PZGameOverViewController.m */; };
 		D4699D8E1954939200F3294B /* FadeTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = D4699D8D1954939200F3294B /* FadeTransition.m */; };
+		D4860734197968540032B1D2 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860733197968540032B1D2 /* Social.framework */; };
 		D4C917BC19434DA40089083F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BB19434DA40089083F /* Foundation.framework */; };
 		D4C917BE19434DA40089083F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BD19434DA40089083F /* CoreGraphics.framework */; };
 		D4C917C019434DA40089083F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BF19434DA40089083F /* UIKit.framework */; };
@@ -48,6 +49,7 @@
 		D4699D8A1954806300F3294B /* PZGameOverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PZGameOverViewController.m; sourceTree = "<group>"; };
 		D4699D8C1954939200F3294B /* FadeTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FadeTransition.h; sourceTree = "<group>"; };
 		D4699D8D1954939200F3294B /* FadeTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FadeTransition.m; sourceTree = "<group>"; };
+		D4860733197968540032B1D2 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		D4C917B819434DA40089083F /* Patternz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Patternz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C917BB19434DA40089083F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D4C917BD19434DA40089083F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -87,6 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4860734197968540032B1D2 /* Social.framework in Frameworks */,
 				D4F3544219745DC9000B4396 /* libz.dylib in Frameworks */,
 				D4C917F819436D350089083F /* QuartzCore.framework in Frameworks */,
 				D4C917BE19434DA40089083F /* CoreGraphics.framework in Frameworks */,
@@ -154,6 +157,7 @@
 		D4C917BA19434DA40089083F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D4860733197968540032B1D2 /* Social.framework */,
 				D4F3544119745DC9000B4396 /* libz.dylib */,
 				D4C917F719436D350089083F /* QuartzCore.framework */,
 				D4C917BB19434DA40089083F /* Foundation.framework */,

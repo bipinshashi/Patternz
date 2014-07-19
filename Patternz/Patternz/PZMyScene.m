@@ -9,6 +9,7 @@
 #import "PZMyScene.h"
 #import <QuartzCore/QuartzCore.h>
 #import "PZDot.h"
+#import "Mixpanel.h"
 
 #define is4InchScreen  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
@@ -26,7 +27,10 @@
 @property (nonatomic,strong) SKLabelNode *titleLabel;
 @property (nonatomic,strong) SKLabelNode *statusLabel;
 @property (nonatomic,strong) SKLabelNode *startLabel;
-@property (nonatomic,strong) SKSpriteNode *startButtonNode;
+//@property (nonatomic,strong) SKSpriteNode *startButtonNode;
+@property (nonatomic,strong) SKSpriteNode *backgroundNode1;
+@property (nonatomic,strong) SKSpriteNode *backgroundNode2;
+
 @property (nonatomic, strong) CAShapeLayer *lineLayer;
 @property (nonatomic, strong) CAShapeLayer *userLineLayer;
 @property (nonatomic, assign) CGMutablePathRef userPathToDraw;
@@ -54,6 +58,7 @@ static int gridSize = 3; //nxn , n=3
     bool isStartScreenShowing;
     bool isFirstRun;
     bool isTitleSet;
+    bool didTapToStart;
     int patternConnections;
     int patternDisplayTime;//in seconds
     NSString *_lastCollidedNodeName;
@@ -63,7 +68,15 @@ static int gridSize = 3; //nxn , n=3
     if (self = [super initWithSize:size]) {
         /* Setup your scene here */
         NSLog(@"Size: %@",NSStringFromCGSize(size));
-
+        
+//        self.backgroundNode1 = [SKSpriteNode spriteNodeWithColor:[SKColor colorWithRed:100.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0] size:self.frame.size];
+//        
+//        self.backgroundNode1.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
+//        self.backgroundNode2 = [SKSpriteNode spriteNodeWithColor:[SKColor colorWithRed:50.0/255.0 green:12.0/255.0 blue:174.0/255.0 alpha:1.0] size:self.frame.size];
+//        self.backgroundNode2.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
+//        
+//        [self addChild:self.backgroundNode2];
+//        [self addChild:self.backgroundNode1];
         self.backgroundColor = [SKColor colorWithRed:100.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
         
         self.titleLabel = [SKLabelNode labelNodeWithFontNamed:@"Copperplate-Bold"];
@@ -98,6 +111,7 @@ static int gridSize = 3; //nxn , n=3
     }
     patternConnections = 3;
     patternDisplayTime = 2;
+    didTapToStart = false;
 }
 
 -(void)resetGrid
@@ -167,8 +181,10 @@ static int gridSize = 3; //nxn , n=3
     CGPathRelease(self.lineLayer.path);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, patternDisplayTime * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self.lineLayer removeFromSuperlayer];
-        if (!isStartScreenShowing) {
-            isPatternDrawing = false;
+        isPatternDrawing = false;
+        if (didTapToStart && isStartScreenShowing) {
+            isStartScreenShowing = false;
+            [self startGame];
         }
     });
 
@@ -253,16 +269,16 @@ static int gridSize = 3; //nxn , n=3
 {
     //function to check if the dot is in the same line or diagonal, then it should be the adjacent dot
     if (currentDot.x == previousDot.x) {
-        if ( abs([currentDot.y integerValue] - [previousDot.y integerValue]) > 1) {
+        if ( abs((int)[currentDot.y integerValue] - (int)[previousDot.y integerValue]) > 1) {
             return NO;
         }
     }else if (currentDot.y == previousDot.y) {
-        if ( abs([currentDot.x integerValue] - [previousDot.x integerValue]) > 1) {
+        if ( abs((int)[currentDot.x integerValue] - (int)[previousDot.x integerValue]) > 1) {
             return NO;
         }
     }else if ((currentDot.x == currentDot.y && previousDot.x == previousDot.y) ||
               ([currentDot.x integerValue] + [currentDot.y integerValue] == (gridSize -1) && [previousDot.x integerValue] + [previousDot.y integerValue] == (gridSize -1))){
-        if ( abs([currentDot.x integerValue] - [previousDot.x integerValue]) > 1) {
+        if ( abs((int)[currentDot.x integerValue] - (int)[previousDot.x integerValue]) > 1) {
             return NO;
         }
     }
@@ -309,11 +325,11 @@ static int gridSize = 3; //nxn , n=3
     
     SKNode *node = [self nodeAtPoint:location];
     if (isStartScreenShowing) {
-        isStartScreenShowing = false;
+        didTapToStart = true;
         isPatternDrawing = true;
         [self.startLabel removeAllActions];
         self.startLabel.alpha = 0;
-        [self startGame];
+        [[Mixpanel sharedInstance] track:@"Tapped to Start Game"];
     }else{
         if (node.name != nil && !isPatternDrawing){
             isUserDrawing = true;
@@ -353,6 +369,7 @@ static int gridSize = 3; //nxn , n=3
             [[self.userLineLayers lastObject] removeFromSuperlayer];
         }
         isUserDrawing = false;
+        isPatternDrawing = true;
         [self evaluatePattern];
     }
 }
@@ -380,16 +397,27 @@ static int gridSize = 3; //nxn , n=3
 
 -(void)setDifficulty
 {
+//    SKAction* fadeOutAction = [SKAction fadeOutWithDuration:0.2];
+//    SKAction* fadeInAction = [SKAction fadeInWithDuration:0.2];
     if (correctPatternCount ==0){
         patternConnections = 3;
         patternDisplayTime = 2;
     }else if (correctPatternCount ==3){
         patternConnections = 4;
+//        self.backgroundNode2.color = [SKColor colorWithRed:35.0/255.0 green:245.0/255.0 blue:110.0/255.0 alpha:1.0];
+//        [self.backgroundNode1 runAction:fadeOutAction];
+//        [self.backgroundNode2 runAction:fadeInAction];
     }else if (correctPatternCount ==7){
          patternConnections = 5;
+//        [self.backgroundNode2 runAction:fadeOutAction];
+//        [self.backgroundNode1 runAction:fadeInAction];
     }else if (correctPatternCount ==10){
         patternDisplayTime = 1;
-    }else if (correctPatternCount ==13){
+    }else if (correctPatternCount ==15){
+        patternConnections = 6;
+        patternDisplayTime = 2;
+    }else if (correctPatternCount == 20){
+        patternDisplayTime = 1;
     }
 }
 
@@ -514,7 +542,7 @@ static int gridSize = 3; //nxn , n=3
 
 -(void)checkBestScore
 {
-    int bestScore = [[NSUserDefaults standardUserDefaults] integerForKey:@"BestScore"];
+    int bestScore = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"BestScore"];
     if (!bestScore || correctPatternCount > bestScore) {
         [[NSUserDefaults standardUserDefaults] setInteger:correctPatternCount forKey:@"BestScore"];
     }
@@ -559,7 +587,7 @@ static int gridSize = 3; //nxn , n=3
     
     //reset alpha values
     self.timerLabel.alpha = 0;
-    self.startButtonNode.alpha = 0;
+//    self.startButtonNode.alpha = 0;
     self.startLabel.alpha = 0;
     self.statusLabel.text = @"Starting Game";
     self.statusLabel.fontColor = [UIColor blackColor];

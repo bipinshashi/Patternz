@@ -8,6 +8,9 @@
 
 #import "PZAppDelegate.h"
 #import "TestFlight.h"
+#import "Mixpanel.h"
+
+#define MIXPANEL_TOKEN @"f242ee7d36033a9beae043dee1a49c99"
 
 @implementation PZAppDelegate
 
@@ -15,6 +18,9 @@
 {
     // Override point for customization after application launch.
     [TestFlight takeOff:@"5e5cccb7-d2d6-4025-b98f-5a3eccce3804"];
+    [Mixpanel sharedInstanceWithToken:MIXPANEL_TOKEN];
+    NSString *uniqueID = [NSString stringWithFormat:@"%@",[UIDevice currentDevice].identifierForVendor.UUIDString];
+    [[Mixpanel sharedInstance] identify:uniqueID];
     return YES;
 }
 							

@@ -10,6 +10,7 @@
 #import "PZViewController.h"
 #import <Social/Social.h>
 #import <Twitter/Twitter.h>
+#import "Mixpanel.h"
 
 @interface PZGameOverViewController ()
 
@@ -45,6 +46,9 @@
 }
 
 - (IBAction)facebookShareClicked:(id)sender {
+    [[Mixpanel sharedInstance] track:@"Share Clicked" properties:@{
+                                           @"type": @"facebook",
+                                           }];
     SLComposeViewController *fbSheet = [SLComposeViewController
                                            composeViewControllerForServiceType:SLServiceTypeFacebook];
     [fbSheet setInitialText:_shareText];
@@ -53,6 +57,9 @@
 }
 
 - (IBAction)twitterShareClicked:(id)sender {
+    [[Mixpanel sharedInstance] track:@"Share Clicked" properties:@{
+                                                                   @"type": @"twitter",
+                                                                   }];
     SLComposeViewController *tweetSheet = [SLComposeViewController
                                            composeViewControllerForServiceType:SLServiceTypeTwitter];
     [tweetSheet setInitialText:_shareText];
@@ -61,11 +68,7 @@
 }
 
 - (IBAction)tryAgainButtonClicked:(id)sender {
-//    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-//    PZViewController *homeVC = [sb instantiateViewControllerWithIdentifier:@"HomeViewController"];
-//    homeVC.modalTransitionStyle = UIModalPresentationCustom;
-//    homeVC.transitioningDelegate = homeVC;
-//    [self presentViewController:homeVC animated:YES completion:nil];
+    [[Mixpanel sharedInstance] track:@"Try Again Clicked"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TryAgain" object:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
 }

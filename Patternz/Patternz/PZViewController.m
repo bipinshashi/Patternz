@@ -22,8 +22,8 @@
     SKView * skView = (SKView *)self.view;
     if (!skView.scene) {
 
-        skView.showsFPS = NO;
-        skView.showsNodeCount = NO;
+        skView.showsFPS = YES;
+        skView.showsNodeCount = YES;
         
         // Create and configure the scene.
         SKScene * scene = [PZMyScene sceneWithSize:skView.bounds.size];

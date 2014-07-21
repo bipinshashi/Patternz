@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GADInterstitial.h"
 
-@interface PZGameOverViewController : UIViewController
+@interface PZGameOverViewController : UIViewController <GADInterstitialDelegate>
 @property (nonatomic, assign) int currentScore;
 @property (strong, nonatomic) IBOutlet UILabel *currentScoreLabel;
 @property (strong, nonatomic) IBOutlet UILabel *bestScoreLabel;

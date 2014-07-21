@@ -338,6 +338,7 @@ static int gridSize = 3; //nxn , n=3
             [self removeUserLineLayersFromSuperLayer];
             self.userLineLayers = [[NSMutableArray alloc] init];
             self.userPathNodePoints = [[NSMutableArray alloc] init];
+            [self.userPathNodePoints removeAllObjects];
             _lastCollidedNodeName = @"";
             [self createUserLineLayer];
         }

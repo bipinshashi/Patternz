@@ -34,14 +34,14 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game Over!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wHb-8j-J3Z">
-                                <rect key="frame" x="50" y="48" width="230" height="34"/>
+                                <rect key="frame" x="50" y="32" width="230" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="Copperplate" family="Copperplate" pointSize="32"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fjw-8a-Qi5" userLabel="ScoreView">
-                                <rect key="frame" x="50" y="125" width="230" height="150"/>
+                                <rect key="frame" x="50" y="80" width="230" height="150"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SCORE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdZ-pW-HMf">
@@ -94,10 +94,14 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wx2-iR-WlL">
-                                <rect key="frame" x="50" y="307" width="103" height="59"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wx2-iR-WlL">
+                                <rect key="frame" x="50" y="262" width="103" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.74509803921568629" green="0.23137254901960785" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="59" id="HEC-ib-mNa"/>
+                                    <constraint firstAttribute="width" constant="103" id="YJC-IL-khS"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="18"/>
                                 <state key="normal" title="Facebook">
                                     <color key="titleColor" red="0.77647058823529413" green="0.87450980392156863" blue="0.25882352941176467" alpha="1" colorSpace="deviceRGB"/>
@@ -112,10 +116,14 @@
                                     <action selector="facebookShareClicked:" destination="Csf-7I-LHU" eventType="touchUpInside" id="P5H-lu-aR2"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q8M-aj-Pcv">
-                                <rect key="frame" x="177" y="307" width="103" height="59"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q8M-aj-Pcv">
+                                <rect key="frame" x="177" y="262" width="103" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.74509803919999995" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="103" id="TV4-Xy-MfQ"/>
+                                    <constraint firstAttribute="height" constant="59" id="UpF-vx-uOL"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="18"/>
                                 <state key="normal" title="Twitter">
                                     <color key="titleColor" red="0.77647058820000003" green="0.87450980389999999" blue="0.25882352939999997" alpha="1" colorSpace="deviceRGB"/>
@@ -130,10 +138,14 @@
                                     <action selector="twitterShareClicked:" destination="Csf-7I-LHU" eventType="touchUpInside" id="ire-Sj-vUk"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kPd-z9-oN7">
-                                <rect key="frame" x="50" y="396" width="230" height="59"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kPd-z9-oN7">
+                                <rect key="frame" x="50" y="351" width="230" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.74509803921568629" green="0.23137254901960785" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="59" id="MuW-NC-k30"/>
+                                    <constraint firstAttribute="width" constant="230" id="fdK-IA-NQs"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="20"/>
                                 <state key="normal" title="TRY AGAIN">
                                     <color key="titleColor" red="0.77647058820000003" green="0.87450980389999999" blue="0.25882352939999997" alpha="1" colorSpace="deviceRGB"/>
@@ -151,8 +163,14 @@
                         </subviews>
                         <color key="backgroundColor" red="0.39215689897537231" green="0.83137261867523193" blue="0.68235296010971069" alpha="1" colorSpace="deviceRGB"/>
                         <constraints>
-                            <constraint firstItem="fjw-8a-Qi5" firstAttribute="top" secondItem="LRW-bV-NRY" secondAttribute="bottom" constant="125" id="PcX-pa-bFB"/>
+                            <constraint firstItem="kPd-z9-oN7" firstAttribute="top" secondItem="q8M-aj-Pcv" secondAttribute="bottom" constant="30" id="Bak-B7-wE0"/>
+                            <constraint firstItem="q8M-aj-Pcv" firstAttribute="top" secondItem="fjw-8a-Qi5" secondAttribute="bottom" constant="32" id="IaV-bv-JZI"/>
+                            <constraint firstItem="fjw-8a-Qi5" firstAttribute="top" secondItem="LRW-bV-NRY" secondAttribute="bottom" constant="80" id="PcX-pa-bFB"/>
                             <constraint firstItem="fjw-8a-Qi5" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="ScE-iX-7pL"/>
+                            <constraint firstItem="kPd-z9-oN7" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="f5C-YT-Vk4"/>
+                            <constraint firstItem="Wx2-iR-WlL" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="fnb-5A-iNj"/>
+                            <constraint firstItem="Wx2-iR-WlL" firstAttribute="top" secondItem="fjw-8a-Qi5" secondAttribute="bottom" constant="32" id="idP-mz-9eO"/>
+                            <constraint firstItem="q8M-aj-Pcv" firstAttribute="leading" secondItem="Wx2-iR-WlL" secondAttribute="trailing" constant="24" id="nzn-Jz-wvL"/>
                         </constraints>
                     </view>
                     <connections>

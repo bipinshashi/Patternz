@@ -10,6 +10,13 @@
 #import "PZMyScene.h"
 #import "PZGameOverViewController.h"
 #import "FadeTransition.h"
+#import "GADBannerView.h"
+
+@interface PZViewController()
+
+@property (nonatomic, strong) GADBannerView *googleBannerView;
+
+@end
 
 @implementation PZViewController
 
@@ -31,6 +38,7 @@
         
         // Present the scene.
         [skView presentScene:scene];
+//        [self setupAds];
     }
 }
 
@@ -78,6 +86,29 @@
 {
     FadeTransition *transition = [[FadeTransition alloc] init];
     return transition;
+}
+
+#pragma mark - googleAd
+
+-(void)setupAds
+{
+    CGPoint origin = CGPointMake(0.0,
+                                 self.view.frame.size.height -
+                                 CGSizeFromGADAdSize(kGADAdSizeBanner).height);
+    self.googleBannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner origin:origin];
+    
+    // Specify the ad unit ID.
+    self.googleBannerView.adUnitID = @"ca-app-pub-1799013171296240/2742850011";
+    
+    self.googleBannerView.rootViewController = self;
+    [self.view addSubview:self.googleBannerView];
+    
+    GADRequest *request = [GADRequest request];
+
+    request.testDevices = [NSArray arrayWithObjects:
+                           GAD_SIMULATOR_ID,
+                           nil];
+    [self.googleBannerView loadRequest:request];
 }
 
 @end

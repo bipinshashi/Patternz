@@ -11,8 +11,14 @@
 #import <Social/Social.h>
 #import <Twitter/Twitter.h>
 #import "Mixpanel.h"
+#import "GADBannerView.h"
+#import "GADInterstitial.h"
+
 
 @interface PZGameOverViewController ()
+
+@property (nonatomic, strong) GADBannerView *googleBannerView;
+@property (nonatomic, strong) GADInterstitial *interstitial;
 
 @end
 
@@ -37,6 +43,11 @@
     self.bestScoreLabel.text = [NSString stringWithFormat:@"%ld Patternz",(long)[[NSUserDefaults standardUserDefaults] integerForKey:@"BestScore"]];
     _shareText = [NSString stringWithFormat:@"Try to beat my score of %@ in #patternz. Download here: http://bit.ly/patternz",self.currentScoreLabel.text ];
     // Do any additional setup after loading the view.
+    [self setupAds];
+    [self setupInterstitialAds];
+    [[Mixpanel sharedInstance] track:@"Game Over" properties:@{
+                                                               @"score": self.currentScoreLabel.text
+                                                               }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,5 +84,45 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - googleAd
+
+-(void)setupAds
+{
+    CGPoint origin = CGPointMake(0.0,
+                                 self.view.frame.size.height -
+                                 CGSizeFromGADAdSize(kGADAdSizeBanner).height);
+    self.googleBannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner origin:origin];
+    
+    // Specify the ad unit ID.
+    self.googleBannerView.adUnitID = @"ca-app-pub-1799013171296240/9707713610";
+    
+    self.googleBannerView.rootViewController = self;
+    [self.view addSubview:self.googleBannerView];
+    
+    GADRequest *request = [GADRequest request];
+    
+    request.testDevices = [NSArray arrayWithObjects:
+                           GAD_SIMULATOR_ID,
+                           nil];
+    [self.googleBannerView loadRequest:request];
+}
+
+-(void)setupInterstitialAds
+{
+    self.interstitial = [[GADInterstitial alloc] init];
+    self.interstitial.adUnitID = @"ca-app-pub-1799013171296240/2184446816";
+    GADRequest *request = [GADRequest request];
+    
+    request.testDevices = [NSArray arrayWithObjects:
+                           GAD_SIMULATOR_ID,
+                           nil];
+    [self.interstitial loadRequest:request];
+    [self.interstitial setDelegate:self];
+}
+
+-(void)interstitialDidReceiveAd:(GADInterstitial *)ad
+{
+    [self.interstitial presentFromRootViewController:self];
+}
 
 @end

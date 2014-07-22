@@ -19,8 +19,11 @@
 		D486074F197D14B30032B1D2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D486074E197D14B30032B1D2 /* AVFoundation.framework */; };
 		D4860751197D14BD0032B1D2 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860750197D14BD0032B1D2 /* CoreTelephony.framework */; };
 		D4860753197D14C50032B1D2 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860752197D14C50032B1D2 /* MessageUI.framework */; };
-		D4860755197D14CB0032B1D2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860754197D14CB0032B1D2 /* StoreKit.framework */; };
+		D4860755197D14CB0032B1D2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860754197D14CB0032B1D2 /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		D4860757197D14D80032B1D2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860756197D14D80032B1D2 /* SystemConfiguration.framework */; };
+		D4860789197E565E0032B1D2 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4860788197E565E0032B1D2 /* CFNetwork.framework */; };
+		D486078E197E57150032B1D2 /* iRate.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D486078B197E57150032B1D2 /* iRate.bundle */; };
+		D486078F197E57150032B1D2 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = D486078D197E57150032B1D2 /* iRate.m */; };
 		D4C917BC19434DA40089083F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BB19434DA40089083F /* Foundation.framework */; };
 		D4C917BE19434DA40089083F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BD19434DA40089083F /* CoreGraphics.framework */; };
 		D4C917C019434DA40089083F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C917BF19434DA40089083F /* UIKit.framework */; };
@@ -84,6 +87,10 @@
 		D4860752197D14C50032B1D2 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		D4860754197D14CB0032B1D2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D4860756197D14D80032B1D2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		D4860788197E565E0032B1D2 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		D486078B197E57150032B1D2 /* iRate.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = iRate.bundle; sourceTree = "<group>"; };
+		D486078C197E57150032B1D2 /* iRate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iRate.h; sourceTree = "<group>"; };
+		D486078D197E57150032B1D2 /* iRate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iRate.m; sourceTree = "<group>"; };
 		D4C917B819434DA40089083F /* Patternz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Patternz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4C917BB19434DA40089083F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D4C917BD19434DA40089083F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -124,8 +131,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D4860757197D14D80032B1D2 /* SystemConfiguration.framework in Frameworks */,
 				D4860755197D14CB0032B1D2 /* StoreKit.framework in Frameworks */,
+				D4860757197D14D80032B1D2 /* SystemConfiguration.framework in Frameworks */,
+				D4860789197E565E0032B1D2 /* CFNetwork.framework in Frameworks */,
 				D4860753197D14C50032B1D2 /* MessageUI.framework in Frameworks */,
 				D4860751197D14BD0032B1D2 /* CoreTelephony.framework in Frameworks */,
 				D486074F197D14B30032B1D2 /* AVFoundation.framework in Frameworks */,
@@ -200,6 +208,26 @@
 			name = AdMobLibrary;
 			sourceTree = "<group>";
 		};
+		D4860758197E56120032B1D2 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				D486078A197E57150032B1D2 /* iRate */,
+				D4F3543719745D85000B4396 /* TestFlightSDK3.0.2 */,
+				D4860749197D14750032B1D2 /* AdMobLibrary */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		D486078A197E57150032B1D2 /* iRate */ = {
+			isa = PBXGroup;
+			children = (
+				D486078B197E57150032B1D2 /* iRate.bundle */,
+				D486078C197E57150032B1D2 /* iRate.h */,
+				D486078D197E57150032B1D2 /* iRate.m */,
+			);
+			path = iRate;
+			sourceTree = "<group>";
+		};
 		D4C917AF19434DA30089083F = {
 			isa = PBXGroup;
 			children = (
@@ -224,6 +252,7 @@
 		D4C917BA19434DA40089083F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D4860788197E565E0032B1D2 /* CFNetwork.framework */,
 				D4860756197D14D80032B1D2 /* SystemConfiguration.framework */,
 				D4860754197D14CB0032B1D2 /* StoreKit.framework */,
 				D4860752197D14C50032B1D2 /* MessageUI.framework */,
@@ -247,7 +276,7 @@
 		D4C917C319434DA40089083F /* Patternz */ = {
 			isa = PBXGroup;
 			children = (
-				D4860749197D14750032B1D2 /* AdMobLibrary */,
+				D4860758197E56120032B1D2 /* Libraries */,
 				D4699D84194DAD4300F3294B /* Models */,
 				D4699D881954804200F3294B /* Controllers */,
 				D4C917CC19434DA40089083F /* PZAppDelegate.h */,
@@ -255,7 +284,6 @@
 				D4C917CF19434DA40089083F /* Main.storyboard */,
 				D4C917D519434DA40089083F /* PZMyScene.h */,
 				D4C917D619434DA40089083F /* PZMyScene.m */,
-				D4F3543719745D85000B4396 /* TestFlightSDK3.0.2 */,
 				D4C917DA19434DA40089083F /* Images.xcassets */,
 				D4C917C419434DA40089083F /* Supporting Files */,
 			);
@@ -369,6 +397,37 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
+				ca,
+				cs,
+				da,
+				de,
+				el,
+				es,
+				fi,
+				fr,
+				he,
+				hu,
+				id,
+				it,
+				ja,
+				ko,
+				ms,
+				nb,
+				nl,
+				pl,
+				"pt-BR",
+				pt,
+				ro,
+				ru,
+				sk,
+				sv,
+				th,
+				tr,
+				uk,
+				vi,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = D4C917AF19434DA30089083F;
 			productRefGroup = D4C917B919434DA40089083F /* Products */;
@@ -390,6 +449,7 @@
 				D4F3544019745D85000B4396 /* release_notes.md in Resources */,
 				D4C917C819434DA40089083F /* InfoPlist.strings in Resources */,
 				D4C917DB19434DA40089083F /* Images.xcassets in Resources */,
+				D486078E197E57150032B1D2 /* iRate.bundle in Resources */,
 				D4F3543F19745D85000B4396 /* README.md in Resources */,
 				D4860748197D146D0032B1D2 /* README.txt in Resources */,
 				D4C917D119434DA40089083F /* Main.storyboard in Resources */,
@@ -444,6 +504,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D486078F197E57150032B1D2 /* iRate.m in Sources */,
 				D4C917D719434DA40089083F /* PZMyScene.m in Sources */,
 				D4C917D419434DA40089083F /* PZViewController.m in Sources */,
 				D4699D8B1954806300F3294B /* PZGameOverViewController.m in Sources */,

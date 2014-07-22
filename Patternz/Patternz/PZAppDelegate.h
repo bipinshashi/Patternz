@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "iRate.h"
 
-@interface PZAppDelegate : UIResponder <UIApplicationDelegate>
+@interface PZAppDelegate : UIResponder <UIApplicationDelegate, iRateDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

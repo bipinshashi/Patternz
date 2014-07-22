@@ -9,6 +9,7 @@
 #import "PZAppDelegate.h"
 #import "TestFlight.h"
 #import "Mixpanel.h"
+#import "iRate.h"
 
 #define MIXPANEL_TOKEN @"f242ee7d36033a9beae043dee1a49c99"
 
@@ -23,6 +24,13 @@
     [[Mixpanel sharedInstance] identify:uniqueID];
     return YES;
 }
+
++ (void)initialize
+{
+    [iRate sharedInstance].daysUntilPrompt = 3;
+    [iRate sharedInstance].usesUntilPrompt = 5;
+}
+
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -51,4 +59,18 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)iRateUserDidAttemptToRateApp
+{
+    [[Mixpanel sharedInstance] track:@"App rating" properties:@{@"type": @"Attempted"}];
+}
+
+-(void)iRateUserDidRequestReminderToRateApp
+{
+    [[Mixpanel sharedInstance] track:@"App rating" properties:@{@"type": @"Reminder"}];
+}
+
+-(void)iRateUserDidDeclineToRateApp
+{
+    [[Mixpanel sharedInstance] track:@"App rating" properties:@{@"type": @"Decline"}];
+}
 @end

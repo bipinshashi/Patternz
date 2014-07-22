@@ -12,6 +12,9 @@
 #import "Mixpanel.h"
 
 #define is4InchScreen  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+#define bgColor [UIColor colorWithRed:100.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0]
+#define titleColor [UIColor colorWithRed:27.0/255.0 green:104.0/255.0 blue:79.0/255.0 alpha:1.0]
+#define dotColor [UIColor colorWithRed:189.0/255.0 green:67.0/255.0 blue:67.0/255.0 alpha:1.0]
 
 @interface PZMyScene()
 @property (nonatomic,strong) NSMutableArray *grid;
@@ -77,13 +80,13 @@ static int gridSize = 3; //nxn , n=3
 //        
 //        [self addChild:self.backgroundNode2];
 //        [self addChild:self.backgroundNode1];
-        self.backgroundColor = [SKColor colorWithRed:100.0/255.0 green:212.0/255.0 blue:174.0/255.0 alpha:1.0];
+        self.backgroundColor = bgColor;
         
-        self.titleLabel = [SKLabelNode labelNodeWithFontNamed:@"Copperplate-Bold"];
+        self.titleLabel = [SKLabelNode labelNodeWithFontNamed:@"AvenirNext-Bold"];
         
         self.titleLabel.text = @"Patternz";
-        self.titleLabel.fontSize = 26;
-        self.titleLabel.fontColor = [UIColor blackColor];
+        self.titleLabel.fontSize = 32;
+        self.titleLabel.fontColor = titleColor;
         self.titleLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 80);
         [self addChild:self.titleLabel];
         [self setDefaults];
@@ -148,10 +151,7 @@ static int gridSize = 3; //nxn , n=3
     CGPathAddArc(path, NULL, 0, 0, dotWidth/2, 0.0, (2 * M_PI), YES);
     dot.path = path;
     //[dot setPath:CGPathCreateWithRoundedRect(CGRectMake(0, 0, dotWidth, dotWidth), dotWidth/2, dotWidth/2, nil)];
-    dot.strokeColor  = dot.fillColor = [UIColor colorWithRed:189.0/255.0
-                                                      green:67.0/255.0
-                                                       blue:67.0/255.0
-                                                      alpha:1.0];
+    dot.strokeColor  = dot.fillColor = dotColor;
     dot.position = CGPointMake((point.x*rowWidth)+ xOffset, (point.y *rowWidth) + yOffset);
     return dot;
 
@@ -162,10 +162,7 @@ static int gridSize = 3; //nxn , n=3
     isPatternDrawing = true;
     self.lineLayer = [CAShapeLayer layer];
     self.lineLayer.name = @"line";
-    self.lineLayer.strokeColor = [UIColor colorWithRed:189.0/255.0
-                                                 green:67.0/255.0
-                                                 blue:67.0/255.0
-                                                 alpha:1.0].CGColor;
+    self.lineLayer.strokeColor = dotColor.CGColor;
     self.lineLayer.fillColor = nil;
     self.lineLayer.lineWidth = 4.0;
     
@@ -290,10 +287,7 @@ static int gridSize = 3; //nxn , n=3
 {
     CAShapeLayer *userLineLayer = [CAShapeLayer layer];
     userLineLayer.name = @"Userline";
-    userLineLayer.strokeColor = [UIColor colorWithRed:189.0/255.0
-                                                     green:67.0/255.0
-                                                      blue:67.0/255.0
-                                                     alpha:1.0].CGColor;
+    userLineLayer.strokeColor = dotColor.CGColor;
     userLineLayer.fillColor = nil;
     userLineLayer.lineWidth = 4.0;
     
@@ -497,9 +491,9 @@ static int gridSize = 3; //nxn , n=3
 //    NSTimer *gameTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
 //    [[NSRunLoop currentRunLoop] addTimer:gameTimer forMode:NSDefaultRunLoopMode];
     timeCount = 10; // instance variable
-    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Futura-MediumItalic"];
-    self.timerLabel.fontSize = 20;
-    self.timerLabel.fontColor = [UIColor blackColor];
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"AvenirNext-Heavy"];
+    self.timerLabel.fontSize = 18;
+    self.timerLabel.fontColor = dotColor;
     self.timerLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 100);
     self.timerLabel.alpha = 0;
     [self addChild:self.timerLabel];
@@ -538,7 +532,8 @@ static int gridSize = 3; //nxn , n=3
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"GameOver" object:
                                                 @{@"score": [NSNumber numberWithInteger:correctPatternCount]}];
-    
+    self.titleLabel.text = @"Patternz";
+    self.timerLabel.alpha = 0;
 }
 
 -(void)checkBestScore
@@ -588,10 +583,9 @@ static int gridSize = 3; //nxn , n=3
     
     //reset alpha values
     self.timerLabel.alpha = 0;
-//    self.startButtonNode.alpha = 0;
     self.startLabel.alpha = 0;
     self.statusLabel.text = @"Starting Game";
-    self.statusLabel.fontColor = [UIColor blackColor];
+    self.statusLabel.fontColor = titleColor;
     
     SKAction *fadeIn = [SKAction fadeInWithDuration:0.5];
     SKAction *fadeOut = [SKAction fadeOutWithDuration:2.0];
@@ -609,9 +603,9 @@ static int gridSize = 3; //nxn , n=3
 }
 
 -(void)createStatusLabel{
-    self.statusLabel = [SKLabelNode labelNodeWithFontNamed:@"Verdana-Italic"];
+    self.statusLabel = [SKLabelNode labelNodeWithFontNamed:@"AvenirNext-Bold"];
     self.statusLabel.fontSize = 14;
-    self.statusLabel.fontColor = [UIColor blackColor];
+    self.statusLabel.fontColor = titleColor;
     self.statusLabel.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetHeight(self.frame) - 140);
     self.statusLabel.text = @"Repeat the Pattern";
     [self addChild:self.statusLabel];
@@ -619,16 +613,9 @@ static int gridSize = 3; //nxn , n=3
 
 -(void)createStartButton
 {
-//    self.startButtonNode = [SKSpriteNode spriteNodeWithColor:[UIColor colorWithRed:190.0/255.0 green:59.0/255.0 blue:59.0/255.0 alpha:1]
-//                                                                 size:CGSizeMake(200, 50)];
-//    self.startButtonNode.position = CGPointMake(CGRectGetMidX(self.frame),70);
-//    self.startButtonNode.name = @"startNode";//how the node is identified later
-//    self.startButtonNode.zPosition = 1.0;
-//    [self addChild:self.startButtonNode];
-    
-    self.startLabel = [SKLabelNode labelNodeWithFontNamed:@"Verdana-Italic"];
-    self.startLabel.fontSize = 16;
-    self.startLabel.fontColor = [UIColor blackColor];
+    self.startLabel = [SKLabelNode labelNodeWithFontNamed:@"AvenirNext-Bold"];
+    self.startLabel.fontSize = 24;
+    self.startLabel.fontColor = dotColor;
     self.startLabel.position = CGPointMake(CGRectGetMidX(self.frame),30);
     self.startLabel.text = @"Touch to START";
     self.startLabel.zPosition = 2.0;
@@ -644,9 +631,9 @@ static int gridSize = 3; //nxn , n=3
 -(void)updateStatusWithMessage:(NSString*)message
 {
     if ([message isEqualToString:@"Correct!!"]) {
-        self.statusLabel.fontColor = [UIColor blackColor];
+        self.statusLabel.fontColor = titleColor;
     }else if([message isEqualToString:@"Wrong!!"]){
-        self.statusLabel.fontColor = [UIColor redColor];
+        self.statusLabel.fontColor = dotColor;
     }
     self.statusLabel.text = message;
     self.statusLabel.fontSize = 16;

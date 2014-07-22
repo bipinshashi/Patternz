@@ -231,12 +231,12 @@
 		D4C917AF19434DA30089083F = {
 			isa = PBXGroup;
 			children = (
-				D4860735197970830032B1D2 /* Podfile */,
 				D4C917C319434DA40089083F /* Patternz */,
 				D4C917E719434DA40089083F /* PatternzTests */,
 				D4C917BA19434DA40089083F /* Frameworks */,
 				D4C917B919434DA40089083F /* Products */,
 				0CCBC12E39A34746BE0FA2B9 /* Pods.xcconfig */,
+				D4860735197970830032B1D2 /* Podfile */,
 			);
 			sourceTree = "<group>";
 		};

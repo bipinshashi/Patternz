@@ -14,11 +14,15 @@
 #import "GADBannerView.h"
 #import "GADInterstitial.h"
 
+#define is4InchScreen  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+
+
 
 @interface PZGameOverViewController ()
 
 @property (nonatomic, strong) GADBannerView *googleBannerView;
 @property (nonatomic, strong) GADInterstitial *interstitial;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *topSpaceConstraint;
 
 @end
 
@@ -48,6 +52,10 @@
     [[Mixpanel sharedInstance] track:@"Game Over" properties:@{
                                                                @"score": self.currentScoreLabel.text
                                                                }];
+    
+    if (is4InchScreen) {
+        self.topSpaceConstraint.constant = 120;
+    }
 }
 
 - (void)didReceiveMemoryWarning

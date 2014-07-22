@@ -160,6 +160,7 @@ static int gridSize = 3; //nxn , n=3
 -(void) createPattern
 {
     isPatternDrawing = true;
+    didTapToStart = false;
     self.lineLayer = [CAShapeLayer layer];
     self.lineLayer.name = @"line";
     self.lineLayer.strokeColor = dotColor.CGColor;
@@ -177,11 +178,9 @@ static int gridSize = 3; //nxn , n=3
     [self.view.layer addSublayer:self.lineLayer];
     CGPathRelease(self.lineLayer.path);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, patternDisplayTime * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self.lineLayer removeFromSuperlayer];
-        isPatternDrawing = false;
-        if (didTapToStart && isStartScreenShowing) {
-            isStartScreenShowing = false;
-            [self startGame];
+        if (!didTapToStart) {
+            [self.lineLayer removeFromSuperlayer];
+            isPatternDrawing = false;
         }
     });
 
@@ -324,6 +323,9 @@ static int gridSize = 3; //nxn , n=3
         [self.startLabel removeAllActions];
         self.startLabel.alpha = 0;
         [[Mixpanel sharedInstance] track:@"Tapped to Start Game"];
+        [self.lineLayer removeFromSuperlayer];
+        isStartScreenShowing = false;
+        [self startGame];
     }else{
         if (node.name != nil && !isPatternDrawing){
             isUserDrawing = true;

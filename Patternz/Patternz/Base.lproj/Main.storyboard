@@ -33,15 +33,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game Over!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wHb-8j-J3Z">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Game Over!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wHb-8j-J3Z">
                                 <rect key="frame" x="50" y="32" width="230" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="230" id="2jt-KW-aMW"/>
+                                    <constraint firstAttribute="height" constant="34" id="Syt-45-99x"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="32"/>
                                 <color key="textColor" red="0.10588235294117647" green="0.40784313725490196" blue="0.30980392156862746" alpha="1" colorSpace="deviceRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fjw-8a-Qi5" userLabel="ScoreView">
-                                <rect key="frame" x="50" y="80" width="230" height="150"/>
+                                <rect key="frame" x="50" y="84" width="230" height="150"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SCORE" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdZ-pW-HMf">
@@ -95,7 +99,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wx2-iR-WlL">
-                                <rect key="frame" x="50" y="262" width="103" height="59"/>
+                                <rect key="frame" x="50" y="266" width="103" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.74509803921568629" green="0.23137254901960785" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
                                 <constraints>
@@ -117,7 +121,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q8M-aj-Pcv">
-                                <rect key="frame" x="177" y="262" width="103" height="59"/>
+                                <rect key="frame" x="177" y="266" width="103" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.74509803919999995" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="deviceRGB"/>
                                 <constraints>
@@ -139,7 +143,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kPd-z9-oN7">
-                                <rect key="frame" x="50" y="351" width="230" height="59"/>
+                                <rect key="frame" x="50" y="355" width="230" height="59"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.74509803921568629" green="0.23137254901960785" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
                                 <constraints>
@@ -164,9 +168,11 @@
                         <color key="backgroundColor" red="0.39215689897537231" green="0.83137261867523193" blue="0.68235296010971069" alpha="1" colorSpace="deviceRGB"/>
                         <constraints>
                             <constraint firstItem="kPd-z9-oN7" firstAttribute="top" secondItem="q8M-aj-Pcv" secondAttribute="bottom" constant="30" id="Bak-B7-wE0"/>
+                            <constraint firstItem="fjw-8a-Qi5" firstAttribute="top" secondItem="wHb-8j-J3Z" secondAttribute="bottom" constant="18" id="ENY-PE-SXd"/>
                             <constraint firstItem="q8M-aj-Pcv" firstAttribute="top" secondItem="fjw-8a-Qi5" secondAttribute="bottom" constant="32" id="IaV-bv-JZI"/>
-                            <constraint firstItem="fjw-8a-Qi5" firstAttribute="top" secondItem="LRW-bV-NRY" secondAttribute="bottom" constant="80" id="PcX-pa-bFB"/>
+                            <constraint firstItem="fjw-8a-Qi5" firstAttribute="top" secondItem="LRW-bV-NRY" secondAttribute="bottom" constant="84" id="PcX-pa-bFB"/>
                             <constraint firstItem="fjw-8a-Qi5" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="ScE-iX-7pL"/>
+                            <constraint firstItem="wHb-8j-J3Z" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="cKF-Le-552"/>
                             <constraint firstItem="kPd-z9-oN7" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="f5C-YT-Vk4"/>
                             <constraint firstItem="Wx2-iR-WlL" firstAttribute="leading" secondItem="KWI-Tq-0rd" secondAttribute="leading" constant="50" id="fnb-5A-iNj"/>
                             <constraint firstItem="Wx2-iR-WlL" firstAttribute="top" secondItem="fjw-8a-Qi5" secondAttribute="bottom" constant="32" id="idP-mz-9eO"/>
@@ -176,6 +182,7 @@
                     <connections>
                         <outlet property="bestScoreLabel" destination="NgH-Ed-4Aq" id="QiD-rB-yFG"/>
                         <outlet property="currentScoreLabel" destination="I5u-Tw-Wgd" id="oqp-6v-jbL"/>
+                        <outlet property="topSpaceConstraint" destination="PcX-pa-bFB" id="oDY-eB-bxh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iga-Ne-SP0" userLabel="First Responder" sceneMemberID="firstResponder"/>
